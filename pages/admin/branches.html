@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chi nhánh | Quản lý nhà hàng</title>
+  <link rel="icon" href="../../assets/images/logo.svg">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body data-root="../../">
+  <header id="app-header"></header>
+
+  <main class="container layout-2col">
+    <!-- Form thêm / sửa -->
+    <section class="card">
+      <h2 id="form-title">Thêm chi nhánh</h2>
+      <form id="branch-form">
+        <label for="name">Tên chi nhánh *</label>
+        <input id="name" name="name" type="text" required maxlength="100" placeholder="VD: Chi nhánh Quận 1">
+
+        <label for="address">Địa chỉ *</label>
+        <input id="address" name="address" type="text" required maxlength="255" placeholder="Số nhà, đường, quận">
+
+        <label for="phone">Số điện thoại</label>
+        <input id="phone" name="phone" type="tel" maxlength="20" placeholder="Không bắt buộc">
+
+        <div class="time-row">
+          <div>
+            <label for="open_time">Giờ mở cửa</label>
+            <input id="open_time" name="open_time" type="time" value="10:00" required>
+          </div>
+          <div>
+            <label for="close_time">Giờ đóng cửa</label>
+            <input id="close_time" name="close_time" type="time" value="22:00" required>
+          </div>
+        </div>
+
+        <div class="checkbox-row">
+          <input id="is_active" name="is_active" type="checkbox" checked>
+          <label for="is_active">Đang hoạt động</label>
+        </div>
+
+        <div class="form-actions">
+          <button id="btn-submit" type="submit" class="btn btn-primary">Thêm</button>
+          <button id="btn-cancel" type="button" class="btn" hidden>Huỷ</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Danh sách -->
+    <section class="card">
+      <div class="list-header">
+        <h2>Danh sách chi nhánh</h2>
+        <input id="search-input" type="search" placeholder="Tìm theo tên...">
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Chi nhánh</th>
+              <th>Giờ mở cửa</th>
+              <th>Trạng thái</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="branch-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer id="app-footer"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.7.9/dist/axios.min.js"></script>
+  <script src="../../js/config.js"></script>
+  <script src="../../js/api.js"></script>
+  <script src="../../js/utils.js"></script>
+  <script src="../../js/layout.js"></script>
+  <script src="../../js/pages/branches.js"></script>
+</body>
+</html>
