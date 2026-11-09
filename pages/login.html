@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng nhập | Quản lý nhà hàng</title>
+  <link rel="icon" href="../assets/images/logo.svg">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-root="../">
+  <header id="app-header"></header>
+
+  <main class="container login-wrap">
+    <section class="card login-card">
+      <h1>Đăng nhập</h1>
+      <p class="muted">Dành cho nhân viên: phục vụ, bếp, thu ngân, quản lý.</p>
+
+      <form id="login-form" novalidate>
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required autocomplete="username" placeholder="ten@restaurant.com">
+
+        <label for="password">Mật khẩu</label>
+        <input id="password" name="password" type="password" required autocomplete="current-password">
+
+        <div class="checkbox-row">
+          <input id="show-password" type="checkbox">
+          <label for="show-password">Hiện mật khẩu</label>
+        </div>
+
+        <div id="login-error" class="status status-error" role="alert" hidden></div>
+
+        <button id="btn-login" type="submit" class="btn btn-primary btn-block">Đăng nhập</button>
+      </form>
+
+      <!-- Chỉ để test khi làm bài: bấm vào tài khoản để điền sẵn. Xoá khối này khi deploy thật. -->
+      <details class="demo-accounts">
+        <summary>Tài khoản thử (mật khẩu chung: Restaurant@123)</summary>
+        <div class="demo-list">
+          <button type="button" class="btn btn-small" data-email="waiter@restaurant.com">Phục vụ</button>
+          <button type="button" class="btn btn-small" data-email="kitchen@restaurant.com">Bếp</button>
+          <button type="button" class="btn btn-small" data-email="cashier@restaurant.com">Thu ngân</button>
+          <button type="button" class="btn btn-small" data-email="manager@restaurant.com">Quản lý</button>
+          <button type="button" class="btn btn-small" data-email="admin@restaurant.com">Admin</button>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <footer id="app-footer"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.7.9/dist/axios.min.js"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/utils.js"></script>
+  <script src="../js/layout.js"></script>
+  <script src="../js/pages/login.js"></script>
+</body>
+</html>

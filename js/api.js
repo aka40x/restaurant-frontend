@@ -1,5 +1,5 @@
 // Module gọi API bằng axios: cấu hình 1 lần, mọi trang dùng chung.
-// (axios được nạp từ CDN bằng thẻ <script> trong từng trang HTML, trước file này)
+// (axios được nạp từ CDN bằng thẻ <script> trong từng trang HTML, trước file này; js/auth.js cũng phải nạp trước)
 //
 // Cách dùng (trong các file js/pages/*.js):
 //   const items = await api.get("/items");
@@ -10,6 +10,10 @@
 //
 // Các hàm trả về thẳng dữ liệu JSON (đã lấy sẵn response.data).
 // Nếu lỗi, hàm sẽ throw ApiError -> bắt bằng try/catch và hiện error.message cho người dùng.
+//
+// Đăng nhập: mọi request tự gắn "Authorization: Bearer <access token>".
+// Access token hết hạn (401) -> tự dùng refresh token xin token mới rồi gọi lại request đó.
+// Refresh token cũng hết hạn -> xoá phiên và chuyển về trang đăng nhập.
 
 class ApiError extends Error {
   constructor(message, status, data) {
@@ -26,12 +30,12 @@ const http = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// Muốn gửi token đăng nhập cho mọi request (khi nhóm làm chức năng login), bỏ comment đoạn dưới:
-// http.interceptors.request.use((config) => {
-//   const token = localStorage.getItem("token");
-//   if (token) config.headers.Authorization = `Bearer ${token}`;
-//   return config;
-// });
+// Gắn token đăng nhập vào mọi request (nếu đã đăng nhập)
+http.interceptors.request.use((config) => {
+  const token = Auth.getAccessToken();
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
 // Lấy câu thông báo lỗi dễ đọc từ response của FastAPI
 function getErrorMessage(data, status) {
@@ -43,13 +47,46 @@ function getErrorMessage(data, status) {
   return `Lỗi ${status}`;
 }
 
+// Xin access token mới bằng refresh token. Nhiều request cùng hết hạn một lúc thì chỉ xin 1 lần.
+let refreshing = null;
+function refreshAccessToken() {
+  if (!refreshing) {
+    refreshing = axios
+      .post(`${CONFIG.API_BASE_URL}/auth/refresh`, { refresh_token: Auth.getRefreshToken() })
+      .then((res) => {
+        Auth.setAccessToken(res.data.access_token);
+        return res.data.access_token;
+      })
+      .finally(() => { refreshing = null; });
+  }
+  return refreshing;
+}
+
 // Gom xử lý lỗi một chỗ: đổi lỗi của axios thành ApiError dễ dùng
 http.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    const original = error.config;
+    const status = error.response?.status;
+    // Đăng nhập sai mật khẩu cũng là 401, và lỗi của chính /auth/refresh thì không được refresh tiếp
+    const isAuthCall = ["/auth/login", "/auth/refresh"].includes(original?.url);
+
+    // Access token hết hạn: thử làm mới 1 lần rồi gọi lại request cũ
+    if (status === 401 && original && !original._retry && !isAuthCall && Auth.getRefreshToken()) {
+      original._retry = true;
+      try {
+        const token = await refreshAccessToken();
+        original.headers.Authorization = `Bearer ${token}`;
+        return http(original);
+      } catch {
+        Auth.logout("expired");
+        return Promise.reject(new ApiError("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại", 401));
+      }
+    }
+
     if (error.response) {
       // Server có trả lời nhưng là lỗi (4xx, 5xx)
-      const { status, data } = error.response;
+      const { data } = error.response;
       return Promise.reject(new ApiError(getErrorMessage(data, status), status, data));
     }
     // Không có response: server tắt, sai URL, bị chặn CORS, hoặc quá thời gian chờ
