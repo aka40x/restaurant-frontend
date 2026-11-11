@@ -69,6 +69,11 @@ form.addEventListener("submit", async (event) => {
     is_active: form.is_active.checked,
   };
 
+  if (data.open_time >= data.close_time) { // "HH:MM" so sánh chuỗi được
+    showToast("Giờ mở cửa phải trước giờ đóng cửa", "error");
+    return;
+  }
+
   submitButton.disabled = true;
   try {
     if (editingId === null) {
