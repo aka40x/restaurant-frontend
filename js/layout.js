@@ -11,6 +11,7 @@
 const MENU = [
   { href: "index.html", label: "Trang chủ" },
   { href: "pages/admin/branches.html", label: "Chi nhánh" },
+  { href: "pages/admin/menu.html", label: "Menu" },
 ];
 
 function renderLayout() {
