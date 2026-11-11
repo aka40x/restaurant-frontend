@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gọi món cho phục vụ | Nhà hàng Fine Dining & Bistro</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="icon" href="../../assets/images/logo.svg">
+  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="stylesheet" href="../../css/pos.css">
+</head>
+<body data-root="../../">
+  <header id="app-header"></header>
+
+  <main class="container">
+    <!-- ============ Đăng nhập (hiện khi chưa có token) ============ -->
+    <section id="loginBox" class="po-login" hidden>
+      <div class="card">
+        <span class="section-tag">DÀNH CHO NHÂN VIÊN</span>
+        <h1 class="po-title">Đăng nhập gọi món</h1>
+        <p class="text-muted">Đăng nhập bằng tài khoản phục vụ để chọn bàn và gọi món.</p>
+        <div id="loginError" class="alert alert-error" hidden></div>
+        <form id="loginForm">
+          <div class="form-group">
+            <label class="form-label" for="loginEmail">Email <span class="required">*</span></label>
+            <input id="loginEmail" class="form-control" type="email" required autocomplete="username" placeholder="waiter@restaurant.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="loginPassword">Mật khẩu <span class="required">*</span></label>
+            <input id="loginPassword" class="form-control" type="password" required autocomplete="current-password">
+          </div>
+          <button id="loginSubmit" type="submit" class="btn btn-primary w-full">Đăng nhập</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ============ Màn hình gọi món ============ -->
+    <div id="posApp" hidden>
+      <div class="po-head">
+        <div>
+          <span class="section-tag">PHỤC VỤ · GỌI MÓN TẠI BÀN</span>
+          <h1 class="po-title">Gọi món</h1>
+        </div>
+        <div class="po-user">
+          <div class="po-user-meta">
+            <strong id="userName"></strong>
+            <span id="userRole" class="muted"></span>
+          </div>
+          <button id="btnLogout" class="btn btn-outline btn-sm" type="button">Đăng xuất</button>
+        </div>
+      </div>
+
+      <div class="po-layout">
+        <!-- Cột trái: chọn bàn -> chọn món -->
+        <section class="card po-left">
+          <!-- Bước 1: chọn bàn -->
+          <div id="stepTables">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">1. Chọn bàn</h3>
+                <div class="card-subtitle">Bàn đang có khách sẽ mở lại order để gọi thêm món</div>
+              </div>
+              <div class="po-legend">
+                <span class="badge badge-success"><span class="badge-dot"></span> Trống</span>
+                <span class="badge badge-danger"><span class="badge-dot"></span> Đang có khách</span>
+                <span class="badge badge-warning"><span class="badge-dot"></span> Đã đặt trước</span>
+              </div>
+            </div>
+            <div id="tableGrid" class="po-table-grid"></div>
+          </div>
+
+          <!-- Bước 2: chọn món -->
+          <div id="stepMenu" hidden>
+            <div class="po-menu-head">
+              <div class="po-menu-title">
+                <button id="btnBack" class="btn btn-outline btn-sm" type="button">← Đổi bàn</button>
+                <h3 class="card-title">2. Chọn món · <span id="menuTableName"></span></h3>
+              </div>
+              <input id="searchInput" class="form-control po-search" type="search" placeholder="Tìm món...">
+            </div>
+            <div id="catTabs" class="po-cats"></div>
+            <div id="dishGrid" class="po-dish-grid"></div>
+          </div>
+        </section>
+
+        <!-- Cột phải: phiếu gọi món -->
+        <aside class="po-sheet card" id="sheet"></aside>
+      </div>
+    </div>
+  </main>
+
+  <!-- ============ Modal chọn tuỳ chọn + ghi chú ============ -->
+  <div id="dishModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="dishTitle">
+      <div class="modal-header">
+        <h3 id="dishTitle" class="modal-title"></h3>
+        <button id="dishClose" class="modal-close" type="button" aria-label="Đóng">&times;</button>
+      </div>
+      <div class="modal-body" id="dishBody"></div>
+      <div class="modal-footer">
+        <button id="dishCancel" class="btn btn-outline" type="button">Huỷ</button>
+        <button id="dishAdd" class="btn btn-primary" type="button">Thêm vào order</button>
+      </div>
+    </div>
+  </div>
+
+  <footer id="app-footer"></footer>
+
+  <!-- Thứ tự quan trọng: axios -> config -> api -> utils -> layout -> script riêng của trang -->
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.7.9/dist/axios.min.js"></script>
+  <script src="../../js/config.js"></script>
+  <script src="../../js/api.js"></script>
+  <script src="../../js/utils.js"></script>
+  <script src="../../js/layout.js"></script>
+  <script src="../../js/pages/pos.js"></script>
+</body>
+</html>

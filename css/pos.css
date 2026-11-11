@@ -1,0 +1,110 @@
+/* ===================================================================
+   MÀN HÌNH GỌI MÓN CHO PHỤC VỤ (pages/admin/pos.html)
+   Dùng token trong variables.css, class dùng chung trong components.css.
+   Class riêng của trang đều bắt đầu bằng "po-" để không đụng nhóm khác.
+   =================================================================== */
+[hidden] { display: none !important; }
+
+.po-title { font-family: var(--font-serif); font-size: 2.2rem; margin: 0; }
+.po-head { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+.po-user { display: flex; align-items: center; gap: 12px; }
+.po-user-meta { display: flex; flex-direction: column; text-align: right; line-height: 1.3; }
+.po-user-meta .muted { font-size: 0.8rem; color: var(--color-text-muted); }
+.po-login { max-width: 440px; margin: 24px auto; }
+.po-login .po-title { font-size: 1.9rem; margin: 6px 0; }
+
+/* ---------- Bố cục 2 cột ---------- */
+.po-layout { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 24px; align-items: start; }
+@media (max-width: 991px) { .po-layout { grid-template-columns: 1fr; } }
+.po-left { margin-bottom: 0; }
+.po-legend { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ---------- Sơ đồ bàn ---------- */
+.po-table-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 14px; }
+.po-table {
+  background: var(--color-card-white); border: 1.5px solid var(--color-border); border-radius: var(--radius-md);
+  padding: 16px 10px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  font: inherit; color: inherit; min-height: var(--min-tap-target); transition: all var(--transition-fast);
+}
+.po-table:hover { transform: translateY(-3px); box-shadow: var(--shadow-card-hover); }
+.po-table.status-available { border-color: #A0C8A4; background: #F8FCF8; }
+.po-table.status-occupied { border-color: #E2ADA0; background: #FCF7F6; }
+.po-table.status-reserved { border-color: #EAD08C; background: #FCFAF2; }
+.po-table.selected { box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.45); border-color: var(--color-accent-gold); }
+.po-table-num { font-family: var(--font-serif); font-size: 1.5rem; font-weight: 700; color: var(--color-primary-black); }
+.po-table-meta { font-size: 0.8rem; color: var(--color-text-muted); }
+
+/* ---------- Menu ---------- */
+.po-menu-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.po-menu-title { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.po-menu-title .card-title { margin: 0; }
+.po-search { max-width: 240px; }
+.po-cats { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.po-cat {
+  border: 1px solid var(--color-secondary-nude); background: transparent; color: var(--color-text-primary);
+  border-radius: var(--radius-pill); padding: 8px 18px; min-height: 40px; cursor: pointer; font-weight: 500;
+  transition: all var(--transition-fast);
+}
+.po-cat:hover { background: var(--color-secondary-nude-soft); }
+.po-cat.active { background: var(--color-primary-black); color: var(--color-accent-champagne); border-color: var(--color-primary-black); }
+
+.po-dish-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
+.po-dish {
+  background: var(--color-card-white); border: 1px solid var(--color-border); border-radius: var(--radius-md);
+  padding: 12px; text-align: left; cursor: pointer; font: inherit; color: inherit;
+  transition: all var(--transition-fast); display: flex; flex-direction: column; gap: 4px;
+}
+.po-dish:hover:not(:disabled) { transform: translateY(-3px); box-shadow: var(--shadow-card-hover); border-color: #D8CCA8; }
+.po-dish:disabled { opacity: .55; cursor: not-allowed; }
+.po-dish-img {
+  position: relative; height: 110px; border-radius: var(--radius-sm); margin-bottom: 8px; overflow: hidden;
+  background: linear-gradient(135deg, var(--color-accent-champagne), var(--color-secondary-nude));
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-serif); font-size: 2.6rem; font-weight: 700; color: var(--color-primary-black);
+}
+.po-dish-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.po-dish-name { font-weight: 600; font-size: 0.95rem; }
+.po-dish-price { color: var(--color-text-muted); font-size: 0.875rem; }
+.po-empty { text-align: center; color: var(--color-text-muted); padding: 36px 12px; }
+
+/* ---------- Phiếu gọi món ---------- */
+.po-sheet { padding: 0; overflow: hidden; position: sticky; top: 84px; }
+@media (max-width: 991px) { .po-sheet { position: static; } }
+.po-sheet-head { padding: 18px 20px; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.po-sheet-head h4 { margin: 0; font-size: 1.25rem; }
+.po-sheet-sub { font-size: 0.8rem; color: var(--color-text-muted); }
+.po-items { max-height: 460px; overflow-y: auto; padding: 8px 20px; }
+.po-item { padding: 12px 0; border-bottom: 1px solid var(--color-border-subtle); display: flex; flex-direction: column; gap: 6px; }
+.po-item:last-child { border-bottom: none; }
+.po-item.cancelled .po-item-name { text-decoration: line-through; color: var(--color-text-muted); }
+.po-item-top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+.po-item-name { font-weight: 600; }
+.po-item-opts { font-size: 0.8rem; color: var(--color-text-muted); }
+.po-item-note { font-size: 0.8rem; font-style: italic; color: var(--color-text-secondary); }
+.po-item-bottom { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.po-item-total { font-weight: 600; white-space: nowrap; }
+.po-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.po-qty { display: inline-flex; align-items: center; gap: 4px; }
+.po-qty button { width: 32px; height: 32px; border: 1px solid var(--color-border); background: var(--color-card-white); border-radius: var(--radius-sm); cursor: pointer; font-size: 1rem; }
+.po-qty button:hover:not(:disabled) { background: var(--color-secondary-nude-soft); }
+.po-qty button:disabled { opacity: .4; cursor: not-allowed; }
+.po-qty span { min-width: 28px; text-align: center; font-weight: 600; }
+.po-sheet-foot { padding: 18px 20px; border-top: 1px solid var(--color-border); background: var(--color-bg-ivory); }
+.po-subtotal { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.po-subtotal strong { font-family: var(--font-serif); font-size: 1.5rem; }
+
+/* ---------- Modal chọn tuỳ chọn ---------- */
+.po-opt-group { margin-bottom: 18px; }
+.po-opt-title { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--color-text-muted); margin-bottom: 4px; }
+.po-opt-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.po-opt-row .form-check { flex: 1; }
+.po-opt-price { font-size: 0.85rem; color: var(--color-text-muted); }
+.po-dish-desc { color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 16px; }
+.po-modal-qty { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.po-modal-total { font-family: var(--font-serif); font-size: 1.3rem; font-weight: 700; }
+
+/* ---------- Tiện ích dùng riêng cho trang này ---------- */
+.section-tag { display: inline-block; font-size: 0.72rem; font-weight: 600; letter-spacing: .14em; color: var(--color-accent-gold); margin-bottom: 4px; }
+/* showToast() trong utils.js gắn thẳng vào <body>, nên cho nó nổi góc phải màn hình */
+body > .toast { position: fixed; top: 80px; right: 24px; z-index: 1200; }
+@media (max-width: 480px) { body > .toast { left: 16px; right: 16px; min-width: 0; } }
