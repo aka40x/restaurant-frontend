@@ -8,9 +8,10 @@
 // (cần nạp js/auth.js trước file này để hiện tên người đăng nhập và nút Đăng xuất)
 
 // Thêm trang mới vào menu: thêm 1 dòng vào mảng này (đường dẫn tính từ thư mục frontend/)
+// roles: chỉ hiện mục này cho các vai trò liệt kê (không ghi roles = ai cũng thấy). admin thấy tất cả mục.
 const MENU = [
   { href: "index.html", label: "Trang chủ" },
-  { href: "pages/admin/branches.html", label: "Chi nhánh" },
+  { href: "pages/admin/branches.html", label: "Chi nhánh", roles: ["admin"] },
 ];
 
 function renderLayout() {
@@ -18,7 +19,10 @@ function renderLayout() {
   const currentPath = window.location.pathname;
   const user = Auth.getUser();
 
-  const links = MENU.map((item) => {
+  const role = user?.role?.name;
+  const visibleMenu = MENU.filter((item) => !item.roles || role === "admin" || item.roles.includes(role));
+
+  const links = visibleMenu.map((item) => {
     const isActive = currentPath.endsWith("/" + item.href) ||
       (item.href === "index.html" && currentPath.endsWith("/"));
     return `<a href="${root}${item.href}" class="${isActive ? "active" : ""}">${item.label}</a>`;

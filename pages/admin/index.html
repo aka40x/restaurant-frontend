@@ -14,7 +14,8 @@
     <section class="card">
       <h1>Trang quản lý	</h1>
       <p id="welcome" class="muted"></p>
-      <p>Tạm thời vào <a href="branches.html">Chi nhánh</a></p>
+      <p>Màn hình này đang được xây dựng.</p>
+      <p id="admin-links" hidden>Quản trị: <a href="branches.html">Quản lý chi nhánh</a></p>
     </section>
   </main>
 
@@ -30,6 +31,7 @@
     // Chỉ các vai trò này được vào (admin luôn được). Sai vai trò thì tự chuyển về màn hình của mình.
     Auth.requireRole(["manager"]);
     const user = Auth.getUser();
+    if (user?.role.name === "admin") document.getElementById("admin-links").hidden = false;
     if (user) document.getElementById("welcome").textContent = `Xin chào ${user.full_name} (${Auth.roleLabel(user)})`;
   </script>
 </body>
