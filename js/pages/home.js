@@ -1,4 +1,4 @@
-// Trang chủ: gọi GET /api/health (qua axios trong js/api.js) để kiểm tra FE -> BE -> MySQL đã thông chưa.
+// Trang chủ: gọi GET /api/health (qua fetch trong js/api.js) để kiểm tra FE -> BE -> MySQL đã thông chưa.
 
 async function checkHealth() {
   const box = document.getElementById("health-status");
@@ -19,3 +19,24 @@ async function checkHealth() {
 document.getElementById("api-url").textContent = CONFIG.API_BASE_URL;
 document.getElementById("btn-recheck").addEventListener("click", checkHealth);
 checkHealth();
+
+// Scroll animation cho các thẻ trải nghiệm & CTA
+const observerOptions = {
+  root: null,
+  rootMargin: "0px",
+  threshold: 0.15,
+};
+
+const observer = new IntersectionObserver((entries, obs) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("visible");
+      obs.unobserve(entry.target);
+    }
+  });
+}, observerOptions);
+
+document.querySelectorAll(".experience-card, .home-cta, .home-intro").forEach((el) => {
+  el.classList.add("animate-on-scroll");
+  observer.observe(el);
+});

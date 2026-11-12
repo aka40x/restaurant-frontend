@@ -25,5 +25,9 @@ function showToast(message, type = "success") {
   toast.className = `toast toast-${type}`;
   toast.textContent = message;
   document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
+  setTimeout(() => {
+    toast.classList.add("toast-exit");
+    toast.addEventListener("animationend", () => toast.remove(), { once: true });
+    setTimeout(() => toast.remove(), 400);
+  }, 3200);
 }

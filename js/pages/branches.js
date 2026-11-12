@@ -7,6 +7,7 @@
 // Làm module của mình: copy file này + pages/admin/branches.html rồi đổi "branches" thành tài nguyên của bạn.
 
 const form = document.getElementById("branch-form");
+const nameInput = document.getElementById("name");
 const tableBody = document.getElementById("branch-table-body");
 const searchInput = document.getElementById("search-input");
 const formTitle = document.getElementById("form-title");
@@ -61,7 +62,7 @@ form.addEventListener("submit", async (event) => {
   event.preventDefault(); // không cho trình duyệt tự reload trang
 
   const data = {
-    name: form.name.value.trim(),
+    name: nameInput.value.trim(),
     address: form.address.value.trim(),
     phone: form.phone.value.trim() || null,
     open_time: form.open_time.value,
@@ -96,7 +97,7 @@ async function startEdit(id) {
   try {
     const b = await api.get(`/branches/${id}`);
     editingId = id;
-    form.name.value = b.name;
+    nameInput.value = b.name;
     form.address.value = b.address;
     form.phone.value = b.phone ?? "";
     form.open_time.value = hhmm(b.open_time);
@@ -105,7 +106,7 @@ async function startEdit(id) {
     formTitle.textContent = `Sửa chi nhánh #${id}`;
     submitButton.textContent = "Lưu thay đổi";
     cancelButton.hidden = false;
-    form.name.focus();
+    nameInput.focus();
   } catch (error) {
     showToast(error.message, "error");
   }
