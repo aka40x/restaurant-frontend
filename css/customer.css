@@ -1,0 +1,52 @@
+/* ==========================================================
+   CSS riêng cho module M3 (đặt bàn, tra cứu, quản lý đặt bàn).
+   Chỉ dùng biến màu khai báo ở :root trong style.css, không tự viết mã màu.
+   ========================================================== */
+.narrow { max-width: 600px; margin: 0 auto; }
+
+/* ---------- Form ---------- */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+.form-grid .full { grid-column: 1 / -1; }
+@media (max-width: 520px) { .form-grid { grid-template-columns: 1fr; } }
+
+select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font: inherit;
+  background: var(--color-card);
+  color: var(--color-text);
+}
+select:focus { outline: 2px solid var(--color-secondary); border-color: var(--color-primary); }
+
+/* Ô tìm kiếm / chọn nằm cùng hàng với nút */
+.inline-form { display: flex; gap: 8px; align-items: end; flex-wrap: wrap; }
+.inline-form > div { flex: 1; min-width: 160px; }
+
+/* ---------- Kết quả đặt bàn / tra cứu ---------- */
+.code-box {
+  margin: 12px 0;
+  padding: 16px;
+  text-align: center;
+  background: var(--color-bg);
+  border: 2px dashed var(--color-secondary);
+  border-radius: var(--radius);
+}
+.code-box .code { font-family: var(--font-heading); font-size: 32px; letter-spacing: 4px; font-weight: 700; word-break: break-all; }
+
+.detail-list { display: grid; grid-template-columns: 130px 1fr; gap: 6px 12px; margin: 12px 0; }
+.detail-list dt { color: var(--color-muted); }
+.detail-list dd { margin: 0; font-weight: 600; word-break: break-word; }
+.detail-list.compact { grid-template-columns: 90px 1fr; font-size: 14px; }
+
+.notice { padding: 12px; border-radius: var(--radius); background: var(--color-bg); border: 1px solid var(--color-border); margin: 12px 0; }
+
+/* ---------- Trang quản lý đặt bàn ---------- */
+.filters { display: flex; gap: 12px; flex-wrap: wrap; align-items: end; margin-bottom: 12px; }
+.filters > div { min-width: 150px; flex: 1; }
+.filters label { margin-top: 0; }
+tr.selectable { cursor: pointer; }
+tr.selectable:hover { background: var(--color-bg); }
+tr.row-selected { background: var(--color-accent); }
+.panel-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }

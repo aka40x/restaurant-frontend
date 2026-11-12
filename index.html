@@ -3,37 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trang chủ | Quản lý nhà hàng</title>
+  <title>Nhà hàng | Ẩm thực thượng hạng</title>
   <link rel="icon" href="assets/images/logo.svg">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/reservation.css">
 </head>
-<body data-root="./">
+<body class="reservation-page" data-root="./">
   <header id="app-header"></header>
 
-  <main class="container">
-    <section class="card">
-      <h1>Hệ thống quản lý nhà hàng</h1>
-      <p>Repo frontend của Nhóm 6 (mô phỏng theo Pizza 4P's). Trang này kiểm tra kết nối <strong>Frontend → Backend → MySQL</strong>.</p>
-
-      <p>API đang dùng: <code id="api-url"></code> <span class="muted">(sửa trong <code>js/config.js</code>)</span></p>
-      <div id="health-status" class="status"></div>
-      <button id="btn-recheck" class="btn">Kiểm tra lại</button>
+  <main class="home-page">
+    <section class="home-hero">
+      <div class="container home-hero-wrapper">
+        <div class="home-hero-content">
+          <p class="eyebrow">TRẢI NGHIỆM THƯỢNG VỊ · ĐẶT BÀN TRỰC TUYẾN</p>
+          <h1>Nghệ Thuật Đón Tiếp</h1>
+          <p>Quý khách vui lòng đặt chỗ trước để chúng tôi chuẩn bị đón tiếp chu đáo nhất. Mỗi bữa tiệc là một hành trình cảm thụ ẩm thực tao nhã và chuẩn mực.</p>
+          <div class="hero-actions">
+            <a class="btn btn-book" href="pages/customer/reservation.html">Đặt Bàn Ngay</a>
+            <a class="btn btn-hero-outline" href="#experience">Khám Phá Trải Nghiệm</a>
+          </div>
+        </div>
+        <div class="hero-assurance">
+          <span aria-hidden="true">✧</span>
+          <div class="assurance-text">
+            <strong>Bảo đảm sự riêng tư</strong>
+            <small>Phục vụ với sự tận tâm không giới hạn</small>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section class="card">
-      <h2>Bắt đầu từ đâu?</h2>
-      <ol>
-        <li>Xem trang <a href="pages/admin/branches.html">Chi nhánh</a>: ví dụ thêm / sửa / ngừng hoạt động / tìm kiếm gọi API thật.</li>
-        <li>Đọc <code>js/api.js</code> để biết cách gọi API.</li>
-        <li>Tạo trang mới: copy <code>pages/admin/branches.html</code> + <code>js/pages/branches.js</code>, thêm link vào <code>js/layout.js</code>.</li>
-      </ol>
+    <section class="container home-content" id="experience">
+      <div class="home-intro">
+        <p class="eyebrow">HƯƠNG VỊ CỦA NHỮNG KHOẢNH KHẮC</p>
+        <h2>Trọn vẹn trong từng trải nghiệm</h2>
+        <p>Từ bữa trưa tinh tế đến yến tiệc riêng tư, đội ngũ Concierge luôn sẵn sàng chuẩn bị không gian phù hợp cho quý khách.</p>
+      </div>
+      <div class="experience-grid">
+        <article class="experience-card"><span>01</span><h3>Ẩm thực theo mùa</h3><p>Nguyên liệu tuyển chọn và hương vị được chăm chút mỗi ngày.</p></article>
+        <article class="experience-card"><span>02</span><h3>Không gian tinh tế</h3><p>Phòng riêng, bàn cạnh cửa sổ và sảnh tiệc dành cho mọi dịp đặc biệt.</p></article>
+        <article class="experience-card"><span>03</span><h3>Đón tiếp tận tâm</h3><p>Chia sẻ yêu cầu của quý khách khi đặt bàn để chúng tôi chuẩn bị chu đáo.</p></article>
+      </div>
+      <div class="home-cta">
+        <div><p class="eyebrow">CHUẨN BỊ CHO CUỘC HẸN TIẾP THEO</p><h2>Chúng tôi đã sẵn sàng đón tiếp quý khách</h2></div>
+        <a class="btn btn-dark" href="pages/customer/reservation.html">Đặt bàn trực tuyến&nbsp; →</a>
+      </div>
+      <details class="connection-details">
+        <summary>Trạng thái hệ thống</summary>
+        <span>API: <code id="api-url"></code></span>
+        <div id="health-status" class="status"></div>
+        <button id="btn-recheck" class="btn">Kiểm tra lại</button>
+      </details>
     </section>
   </main>
 
   <footer id="app-footer"></footer>
 
-  <!-- Thứ tự quan trọng: axios -> config -> api -> utils -> layout -> script riêng của trang -->
-  <script src="https://cdn.jsdelivr.net/npm/axios@1.7.9/dist/axios.min.js"></script>
+  <!-- Thứ tự quan trọng: config -> api -> utils -> layout -> script riêng của trang -->
   <script src="js/config.js"></script>
   <script src="js/api.js"></script>
   <script src="js/utils.js"></script>
