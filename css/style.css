@@ -627,3 +627,14 @@ tbody tr:hover { background: rgba(243, 227, 179, 0.15); }
   .hero-actions { gap: 10px; }
   .home-content { padding-top: 36px; padding-bottom: 36px; }
 }
+
+/* ---------- Đăng nhập / người dùng ---------- */
+[hidden] { display: none !important; }
+.login-wrap { display: flex; justify-content: center; align-items: flex-start; }
+.login-card { width: 100%; max-width: 400px; margin-top: 32px; }
+.login-card h1 { font-family: var(--font-heading); margin-top: 0; }
+.btn-block { width: 100%; margin-top: 16px; padding: 10px; }
+.user-box { display: flex; align-items: center; gap: 8px; }
+.user-name { font-weight: 600; color: var(--color-text); text-decoration: none; }
+.demo-accounts { margin-top: 20px; font-size: 14px; color: var(--color-muted); }
+.demo-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }

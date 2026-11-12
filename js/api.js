@@ -8,6 +8,10 @@
 //   await api.delete("/items/1");
 //
 // Nếu lỗi, hàm sẽ throw ApiError -> bắt bằng try/catch và hiện error.message cho người dùng.
+//
+// Đăng nhập: mọi request tự gắn "Authorization: Bearer <access token>".
+// Access token hết hạn (401) -> tự dùng refresh token xin token mới rồi gọi lại request đó.
+// Refresh token cũng hết hạn -> xoá phiên và chuyển về trang đăng nhập.
 
 class ApiError extends Error {
   constructor(message, status, data) {
@@ -28,7 +32,50 @@ function getErrorMessage(data, status) {
   return `Lỗi ${status}`;
 }
 
-async function request(method, path, body, params) {
+async function readResponseData(response) {
+  const responseText = await response.text();
+  if (!responseText) return null;
+  try {
+    return JSON.parse(responseText);
+  } catch {
+    return responseText;
+  }
+}
+
+let refreshing = null;
+function refreshAccessToken() {
+  if (!refreshing) {
+    refreshing = (async () => {
+      const baseUrl = CONFIG.API_BASE_URL.replace(/\/+$/, "");
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      let response;
+      try {
+        response = await fetch(`${baseUrl}/auth/refresh`, {
+          method: "POST",
+          signal: controller.signal,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ refresh_token: Auth.getRefreshToken() }),
+        });
+      } finally {
+        clearTimeout(timeoutId);
+      }
+
+      const data = await readResponseData(response);
+      if (!response.ok) {
+        throw new ApiError(getErrorMessage(data, response.status), response.status, data);
+      }
+      if (!data || typeof data.access_token !== "string") {
+        throw new ApiError("Backend không trả về access token hợp lệ", response.status, data);
+      }
+      Auth.setAccessToken(data.access_token);
+      return data.access_token;
+    })().finally(() => { refreshing = null; });
+  }
+  return refreshing;
+}
+
+async function request(method, path, body, params, retried = false) {
   const baseUrl = CONFIG.API_BASE_URL.replace(/\/+$/, "");
   const url = new URL(`${baseUrl}/${path.replace(/^\/+/, "")}`);
   if (params) {
@@ -37,6 +84,11 @@ async function request(method, path, body, params) {
     });
   }
 
+  const headers = {};
+  if (body !== undefined) headers["Content-Type"] = "application/json";
+  const accessToken = Auth.getAccessToken();
+  if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
+
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 10000);
   let response;
@@ -44,7 +96,7 @@ async function request(method, path, body, params) {
     response = await fetch(url, {
       method,
       signal: controller.signal,
-      headers: body === undefined ? {} : { "Content-Type": "application/json" },
+      headers,
       body: body === undefined ? undefined : JSON.stringify(body),
     });
   } catch {
@@ -55,16 +107,22 @@ async function request(method, path, body, params) {
     clearTimeout(timeoutId);
   }
 
-  const responseText = await response.text();
-  let data = null;
-  if (responseText) {
+  if (
+    response.status === 401 &&
+    !retried &&
+    !["/auth/login", "/auth/refresh"].includes(`/${path.replace(/^\/+/, "")}`) &&
+    Auth.getRefreshToken()
+  ) {
     try {
-      data = JSON.parse(responseText);
+      await refreshAccessToken();
     } catch {
-      data = responseText;
+      Auth.logout("expired");
+      throw new ApiError("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại", 401);
     }
+    return request(method, path, body, params, true);
   }
 
+  const data = await readResponseData(response);
   if (!response.ok) {
     throw new ApiError(getErrorMessage(data, response.status), response.status, data);
   }

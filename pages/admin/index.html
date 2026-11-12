@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TIÊU_ĐỀ | Quản lý nhà hàng</title>
+  <link rel="icon" href="../../assets/images/logo.svg">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body data-root="../../">
+  <header id="app-header"></header>
+
+  <main class="container">
+    <section class="card">
+      <h1>Trang quản lý	</h1>
+      <p id="welcome" class="muted"></p>
+      <p>Màn hình này đang được xây dựng.</p>
+      <p id="admin-links" hidden>Quản trị: <a href="branches.html">Quản lý chi nhánh</a></p>
+    </section>
+  </main>
+
+  <footer id="app-footer"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.7.9/dist/axios.min.js"></script>
+  <script src="../../js/config.js"></script>
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/api.js"></script>
+  <script src="../../js/utils.js"></script>
+  <script src="../../js/layout.js"></script>
+  <script>
+    // Chỉ các vai trò này được vào (admin luôn được). Sai vai trò thì tự chuyển về màn hình của mình.
+    Auth.requireRole(["manager"]);
+    const user = Auth.getUser();
+    if (user?.role.name === "admin") document.getElementById("admin-links").hidden = false;
+    if (user) document.getElementById("welcome").textContent = `Xin chào ${user.full_name} (${Auth.roleLabel(user)})`;
+  </script>
+</body>
+</html>
