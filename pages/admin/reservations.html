@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý đặt bàn | Quản lý nhà hàng</title>
+  <link rel="icon" href="../../assets/images/logo.svg">
+  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="stylesheet" href="../../css/customer.css">
+</head>
+<body data-root="../../">
+  <header id="app-header"></header>
+
+  <main class="container layout-2col">
+    <!-- Xử lý đặt bàn đang chọn -->
+    <section class="card" id="detail-card">
+      <h2>Xử lý đặt bàn</h2>
+      <p id="detail-empty" class="muted">Chọn một đặt bàn trong danh sách để xác nhận, xếp bàn, check-in hoặc huỷ.</p>
+
+      <div id="detail-body" hidden>
+        <div id="detail-status"></div>
+        <dl class="detail-list compact" id="detail-info"></dl>
+
+        <div id="table-box">
+          <label for="table-select">Bàn</label>
+          <select id="table-select"></select>
+          <div id="table-hint" class="muted"></div>
+        </div>
+
+        <div class="panel-actions" id="detail-actions"></div>
+      </div>
+    </section>
+
+    <!-- Danh sách -->
+    <section class="card">
+      <div class="list-header">
+        <h2>Danh sách đặt bàn</h2>
+      </div>
+
+      <div class="filters">
+        <div>
+          <label for="filter-branch">Chi nhánh</label>
+          <select id="filter-branch"><option value="">Tất cả chi nhánh</option></select>
+        </div>
+        <div>
+          <label for="filter-day">Ngày</label>
+          <input id="filter-day" type="date">
+        </div>
+        <div>
+          <label for="filter-status">Trạng thái</label>
+          <select id="filter-status">
+            <option value="">Tất cả</option>
+            <option value="pending">Chờ xác nhận</option>
+            <option value="confirmed">Đã xác nhận</option>
+            <option value="seated">Đã nhận bàn</option>
+            <option value="cancelled">Đã huỷ</option>
+            <option value="no_show">Không đến</option>
+          </select>
+        </div>
+        <div>
+          <label for="filter-q">Tìm</label>
+          <input id="filter-q" type="search" placeholder="Mã, tên, số điện thoại...">
+        </div>
+      </div>
+      <div class="muted" id="list-summary"></div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Giờ</th>
+              <th>Khách</th>
+              <th>Số người</th>
+              <th>Chi nhánh / Bàn</th>
+              <th>Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody id="reservation-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer id="app-footer"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.7.9/dist/axios.min.js"></script>
+  <script src="../../js/config.js"></script>
+  <script src="../../js/api.js"></script>
+  <script src="../../js/utils.js"></script>
+  <script src="../../js/layout.js"></script>
+  <script src="../../js/pages/reservation-common.js"></script>
+  <script src="../../js/pages/reservations.js"></script>
+</body>
+</html>

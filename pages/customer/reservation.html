@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#191817">
+  <title>Đặt bàn trực tuyến | Nhà hàng</title>
+  <link rel="icon" href="../../assets/images/logo.svg">
+  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="stylesheet" href="../../css/reservation.css">
+</head>
+<body class="reservation-page booking-page" data-root="../../">
+  <header id="app-header"></header>
+
+  <main class="container">
+    <section class="reservation-hero">
+      <div class="reservation-hero-copy">
+        <p class="eyebrow">TRẢI NGHIỆM THƯỢNG VỊ · ĐẶT BÀN TRỰC TUYẾN</p>
+        <h1>Nghệ Thuật Đón Tiếp</h1>
+        <p>Quý khách vui lòng đặt chỗ trước để chúng tôi chuẩn bị đón tiếp chu đáo nhất. Mỗi bữa tiệc là một hành trình cảm thụ ẩm thực tao nhã và chuẩn mực.</p>
+      </div>
+      <div class="hero-assurance">
+        <span aria-hidden="true">♙</span>
+        <strong>Bảo đảm sự riêng tư</strong>
+        <small>Thông tin của quý khách được bảo mật</small>
+      </div>
+    </section>
+
+    <div class="reservation-layout">
+      <form id="reservation-form" class="reservation-form" novalidate>
+        <section class="form-section" aria-labelledby="step-one-title">
+          <div class="section-heading">
+            <h2 id="step-one-title">1. Không Gian &amp; Thời Khắc</h2>
+            <span class="step-label">BƯỚC 1 / 3</span>
+          </div>
+
+          <label class="field-label" for="branch">♧ Chọn Chi nhánh Thưởng Lãm</label>
+          <select id="branch" required>
+            <option value="">Đang tải chi nhánh...</option>
+          </select>
+          <div class="field-error" id="err-branch" aria-live="polite"></div>
+
+          <div class="booking-fields-row">
+            <div class="booking-date">
+              <label class="field-label" for="date">▣ Ngày Dùng Bữa</label>
+              <input id="date" type="date" required>
+              <div class="field-error" id="err-date" aria-live="polite"></div>
+            </div>
+            <div>
+              <div class="field-label"><span>♧ Số Lượng Thực Khách</span><span class="party-total"><strong id="party-total">2</strong> Khách</span></div>
+              <div class="party-row">
+                <div class="chip-group" id="party-chips" aria-label="Chọn số khách">
+                  <button type="button" class="chip" data-size="2">2</button>
+                  <button type="button" class="chip" data-size="4">4</button>
+                  <button type="button" class="chip" data-size="6">6</button>
+                  <button type="button" class="chip" data-size="8">8+</button>
+                </div>
+                <input id="party_size" type="number" min="1" max="50" value="2" aria-label="Số lượng khách" required>
+              </div>
+              <div class="field-error" id="err-party" aria-live="polite"></div>
+            </div>
+          </div>
+
+          <div class="field-label"><span>◷ Khung Giờ Đón Tiếp</span><span class="field-hint">Chọn giờ còn chỗ</span></div>
+          <div id="time-slots" class="time-picker" aria-label="Chọn giờ đến"></div>
+          <div class="field-error" id="err-time" aria-live="polite"></div>
+        </section>
+
+        <section class="form-section" aria-labelledby="step-two-title">
+          <div class="section-heading">
+            <h2 id="step-two-title">2. Không Gian Ưu Tiên</h2>
+            <span class="step-label">BƯỚC 2 / 3</span>
+          </div>
+          <div class="preference-grid">
+            <label class="preference-card selected">
+              <input type="radio" name="preferred_area" value="Khu Vực Chung" checked>
+              <span class="preference-icon" aria-hidden="true">▱</span>
+              <span><strong>Khu Vực Chung</strong><small>Yên tĩnh, trang nhã, âm nhạc thính phòng nhẹ nhàng</small></span>
+              <span class="preference-check" aria-hidden="true">●</span>
+            </label>
+            <label class="preference-card">
+              <input type="radio" name="preferred_area" value="Bàn Cạnh Cửa Sổ">
+              <span class="preference-icon" aria-hidden="true">⌂</span>
+              <span><strong>Bàn Cạnh Cửa Sổ</strong><small>Góc nhìn toàn cảnh phố thị về đêm lung linh</small></span>
+              <span class="preference-check" aria-hidden="true">○</span>
+            </label>
+            <label class="preference-card">
+              <input type="radio" name="preferred_area" value="Phòng VIP Private">
+              <span class="preference-icon" aria-hidden="true">♧</span>
+              <span><strong>Phòng VIP Private</strong><small>Riêng tư tuyệt đối với phục vụ viên chuyên biệt</small></span>
+              <span class="preference-check" aria-hidden="true">○</span>
+            </label>
+          </div>
+          <p class="field-hint">Khu vực ưu tiên được ghi nhận làm yêu cầu, nhà hàng sẽ cố gắng sắp xếp theo mong muốn của quý khách.</p>
+        </section>
+
+        <section class="form-section" aria-labelledby="step-three-title">
+          <div class="section-heading">
+            <h2 id="step-three-title">3. Thông Tin Liên Hệ &amp; Yêu Cầu</h2>
+            <span class="step-label">BƯỚC 3 / 3</span>
+          </div>
+          <div class="contact-grid">
+            <div>
+              <label class="field-label" for="guest_name">Họ và Tên Quý Khách <span aria-hidden="true">*</span></label>
+              <input id="guest_name" type="text" maxlength="100" placeholder="Nguyễn Văn An" autocomplete="name" required>
+              <div class="field-error" id="err-name" aria-live="polite"></div>
+            </div>
+            <div>
+              <label class="field-label" for="guest_phone">Số Điện Thoại Xác Nhận <span aria-hidden="true">*</span></label>
+              <input id="guest_phone" type="tel" maxlength="20" placeholder="090 123 4567" autocomplete="tel" required>
+              <div class="field-error" id="err-phone" aria-live="polite"></div>
+            </div>
+            <div class="full">
+              <label class="field-label" for="guest_email">Email Liên Hệ <span aria-hidden="true">*</span></label>
+              <input id="guest_email" type="email" maxlength="100" placeholder="an.nguyen@example.com" autocomplete="email" required>
+              <div class="field-error" id="err-email" aria-live="polite"></div>
+            </div>
+            <div class="full">
+              <label class="field-label" for="note">Ghi Chú Đặc Biệt &amp; Yêu Cầu Ẩm Thực <span class="field-hint">(Tùy chọn)</span></label>
+              <textarea id="note" rows="3" maxlength="180" placeholder="Ví dụ: Kỷ niệm ngày cưới, chuẩn bị nến thơm, dị ứng hải sản..."></textarea>
+              <div class="field-error" id="err-note" aria-live="polite"></div>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button id="btn-submit" type="submit" class="btn btn-primary reservation-submit">♜ &nbsp;Xác Nhận Đặt Bàn Ngay</button>
+          </div>
+        </section>
+      </form>
+
+      <aside class="reservation-sidebar">
+        <section class="reservation-side-card">
+          <h2>▣ TÓM TẮT YÊU CẦU <span class="summary-status">Đang chọn</span></h2>
+          <div class="summary-row"><span>Chi nhánh:</span><span id="sum-branch">Chọn chi nhánh</span></div>
+          <div class="summary-row"><span>Thời gian:</span><span id="sum-time">Chọn ngày và giờ</span></div>
+          <div class="summary-row"><span>Số thực khách:</span><span id="sum-party">2 Khách</span></div>
+          <div class="summary-row"><span>Khu vực bàn:</span><span id="sum-area">Khu Vực Chung</span></div>
+          <div class="summary-row"><span>Người đặt bàn:</span><span id="sum-name">-</span></div>
+        </section>
+
+        <section class="reservation-side-card policy-card" id="dress-code">
+          <h2>♧ Chính Sách Giữ Bàn</h2>
+          <ul class="policy-list">
+            <li>◷ Thời gian giữ chỗ: Mỗi đặt bàn giữ bàn khoảng 2 giờ kể từ giờ hẹn.</li>
+            <li>♙ Quy chuẩn trang phục: Smart Casual (Trang trọng, lịch sự, vui lòng không mặc trang phục thể thao hoặc dép lê).</li>
+            <li>♧ Thay đổi lịch: Quý khách có thể huỷ đặt bàn trực tuyến trước giờ hẹn tại trang Tra cứu đặt bàn.</li>
+          </ul>
+          <div class="policy-call"><span>HỖ TRỢ TIỆC RIÊNG &amp; VIP<strong>1900 8888</strong></span><span aria-hidden="true">☎</span></div>
+        </section>
+
+        <article class="promo-card">
+          <p class="eyebrow">TRẢI NGHIỆM ĐỘC BẢN</p>
+          <h2>Dạ Tiệc Rượu Vang &amp; Nấm Truffle</h2>
+          <p>Phục vụ đặc quyền vào tối thứ Sáu hàng tuần tại phòng VIP.</p>
+        </article>
+      </aside>
+    </div>
+  </main>
+
+  <footer id="app-footer"></footer>
+  <script src="../../js/config.js"></script>
+  <script src="../../js/api.js"></script>
+  <script src="../../js/utils.js"></script>
+  <script src="../../js/layout.js"></script>
+  <script src="../../js/pages/reservation.js"></script>
+</body>
+</html>

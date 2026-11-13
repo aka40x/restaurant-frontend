@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý menu | Quản lý nhà hàng</title>
+  <link rel="icon" href="../../assets/images/logo.svg">
+  <link rel="stylesheet" href="../../css/style.css">
+  <style>
+    /* Style riêng cho trang menu (css/style.css chưa có các phần này) */
+    select { width: 100%; padding: 8px 10px; border: 1px solid var(--color-border); border-radius: var(--radius); font: inherit; background: #fff; }
+    textarea { min-height: 70px; resize: vertical; }
+    .menu-thumb { width: 52px; height: 52px; object-fit: cover; border-radius: 6px; background: #eee; display: block; }
+    .toolbar { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
+    .toolbar input { max-width: 260px; }
+    .toolbar select { max-width: 220px; width: auto; }
+    .row-gap { display: flex; gap: 8px; }
+    .row-gap .btn { white-space: nowrap; }
+    th { white-space: nowrap; }
+    .badge { white-space: nowrap; }
+    .col-nowrap { white-space: nowrap; }
+    td.price { white-space: nowrap; font-weight: 600; }
+    td { vertical-align: middle; }
+    .actions { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap; border-bottom: 0; }
+    .actions .btn { white-space: nowrap; }
+    .pager { display: flex; gap: 6px; align-items: center; justify-content: flex-end; margin-top: 16px; flex-wrap: wrap; }
+    .pager .info { margin-right: auto; }
+    .pager button { min-width: 36px; padding: 6px 10px; border: 1px solid var(--color-border); border-radius: var(--radius); background: #fff; cursor: pointer; font: inherit; }
+    .pager button.active { background: var(--color-primary); color: var(--color-accent); border-color: var(--color-primary); }
+    .pager button:disabled { opacity: .4; cursor: not-allowed; }
+  </style>
+</head>
+<body data-root="../../">
+  <header id="app-header"></header>
+
+  <main class="container layout-2col">
+    <!-- Cột trái: form thêm / sửa món -->
+    <section class="card">
+      <h2 id="item-form-title">Thêm món</h2>
+      <form id="item-form">
+        <label for="category_id">Danh mục *</label>
+        <div class="row-gap">
+          <select id="category_id" name="category_id" required></select>
+          <button id="btn-add-category" type="button" class="btn btn-small" title="Thêm danh mục mới">+ Danh mục</button>
+        </div>
+
+        <label for="name">Tên món *</label>
+        <input id="name" name="name" type="text" required maxlength="150" placeholder="VD: Pizza hải sản">
+
+        <label for="price">Giá (₫) *</label>
+        <input id="price" name="price" type="number" required min="0" step="any" placeholder="VD: 120000">
+
+        <label for="image_url">Link ảnh</label>
+        <input id="image_url" name="image_url" type="text" maxlength="255" placeholder="https://... (không bắt buộc)">
+
+        <label for="description">Mô tả</label>
+        <textarea id="description" name="description" placeholder="Mô tả ngắn về món"></textarea>
+
+        <div class="checkbox-row">
+          <input id="is_available" name="is_available" type="checkbox" checked>
+          <label for="is_available">Còn món (bỏ chọn = hết món)</label>
+        </div>
+        <div class="checkbox-row">
+          <input id="is_active" name="is_active" type="checkbox" checked>
+          <label for="is_active">Đang bán (bỏ chọn = ngừng bán)</label>
+        </div>
+
+        <div class="form-actions">
+          <button id="btn-item-submit" type="submit" class="btn btn-primary">Thêm</button>
+          <button id="btn-item-cancel" type="button" class="btn" hidden>Huỷ</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Cột phải: bảng món + tuỳ chọn -->
+    <div>
+      <section class="card">
+        <div class="list-header">
+          <h2>Danh sách món</h2>
+        </div>
+        <div class="toolbar">
+          <input id="search-input" type="search" placeholder="Tìm theo tên món...">
+          <select id="filter-category"></select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Ảnh</th>
+                <th>Món</th>
+                <th>Giá</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="item-table-body"></tbody>
+          </table>
+        </div>
+        <div id="pager" class="pager"></div>
+      </section>
+
+      <!-- Tuỳ chọn của món đang chọn (hiện khi bấm nút "Tuỳ chọn") -->
+      <section id="option-card" class="card" hidden>
+        <div class="list-header">
+          <h2 id="option-title">Tuỳ chọn</h2>
+          <button id="btn-option-close" type="button" class="btn btn-small">Đóng</button>
+        </div>
+        <p class="muted">Size, topping, giá cộng thêm, bắt buộc / không bắt buộc.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Tên</th>
+                <th>Size</th>
+                <th>Topping</th>
+                <th>Giá thêm</th>
+                <th>Bắt buộc</th>
+                <th>Trạng thái</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="option-table-body"></tbody>
+          </table>
+        </div>
+
+        <h3 id="option-form-title" style="margin: 24px 0 0;">Thêm tuỳ chọn</h3>
+        <form id="option-form">
+          <div class="time-row">
+            <div>
+              <label for="opt_name">Tên tuỳ chọn *</label>
+              <input id="opt_name" name="name" type="text" required maxlength="100" placeholder="VD: Size L">
+            </div>
+            <div>
+              <label for="opt_price">Giá cộng thêm (₫)</label>
+              <input id="opt_price" name="extra_price" type="number" min="0" step="any" value="0">
+            </div>
+          </div>
+          <div class="time-row">
+            <div>
+              <label for="opt_size">Size</label>
+              <input id="opt_size" name="size" type="text" maxlength="20" placeholder="VD: L">
+            </div>
+            <div>
+              <label for="opt_topping">Topping</label>
+              <input id="opt_topping" name="topping" type="text" maxlength="50" placeholder="VD: Phô mai">
+            </div>
+          </div>
+          <div class="checkbox-row">
+            <input id="opt_required" name="is_required" type="checkbox">
+            <label for="opt_required">Bắt buộc phải chọn</label>
+          </div>
+          <div class="checkbox-row">
+            <input id="opt_active" name="is_active" type="checkbox" checked>
+            <label for="opt_active">Đang áp dụng</label>
+          </div>
+          <div class="form-actions">
+            <button id="btn-option-submit" type="submit" class="btn btn-primary">Thêm tuỳ chọn</button>
+            <button id="btn-option-cancel" type="button" class="btn" hidden>Huỷ</button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <footer id="app-footer"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.7.9/dist/axios.min.js"></script>
+  <script src="../../js/config.js"></script>
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/api.js"></script>
+  <script src="../../js/utils.js"></script>
+  <script src="../../js/layout.js"></script>
+  <script src="../../js/pages/menu.js"></script>
+</body>
+</html>

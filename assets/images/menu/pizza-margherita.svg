@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+<rect width="400" height="400" rx="28" fill="#f3e3b3"/><circle cx="200" cy="200" r="178" fill="#faf0d0"/>
+<ellipse cx="206" cy="216" rx="150" ry="146" fill="#00000014"/>
+<circle cx="200" cy="200" r="148" fill="#d8903f"/>
+<circle cx="200" cy="200" r="148" fill="none" stroke="#c47a2c" stroke-width="4"/>
+<circle cx="200" cy="200" r="126" fill="#d9482f"/>
+<g fill="#fff6dc">
+<circle cx="150" cy="150" r="30"/><circle cx="238" cy="140" r="27"/><circle cx="262" cy="214" r="31"/>
+<circle cx="205" cy="262" r="30"/><circle cx="138" cy="232" r="28"/><circle cx="200" cy="200" r="24"/>
+</g>
+<g fill="#fff6dc" opacity=".8"><circle cx="190" cy="120" r="12"/><circle cx="294" cy="170" r="11"/><circle cx="108" cy="190" r="11"/><circle cx="250" cy="280" r="11"/></g>
+<g fill="#2f8a3d">
+<path d="M150 150 q22 -20 40 0 q-18 22 -40 0z"/>
+<path d="M238 140 q20 -22 40 -2 q-20 22 -40 2z" transform="rotate(25 238 140)"/>
+<path d="M262 214 q20 -20 40 0 q-20 22 -40 0z" transform="rotate(-30 262 214)"/>
+<path d="M205 262 q20 -22 40 0 q-20 22 -40 0z" transform="rotate(60 205 262)"/>
+<path d="M138 232 q20 -22 40 0 q-20 22 -40 0z" transform="rotate(-50 138 232)"/>
+</g>
+</svg>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#191817">
+  <title>Tra cứu đặt bàn | Nhà hàng</title>
+  <link rel="icon" href="../../assets/images/logo.svg">
+  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="stylesheet" href="../../css/reservation.css">
+</head>
+<body class="reservation-page lookup-page" data-root="../../">
+  <header id="app-header"></header>
+
+  <main class="container lookup-main">
+    <section class="lookup-intro">
+      <h1>Tra Cứu Đặt Bàn</h1>
+      <p>Kiểm tra trạng thái đặt bàn và chi tiết đón tiếp.</p>
+    </section>
+
+    <section class="lookup-search-card" aria-label="Tra cứu đặt bàn">
+      <div class="lookup-tabs" role="tablist" aria-label="Chọn thông tin tra cứu">
+        <button id="search-by-code" class="lookup-tab active" type="button" role="tab" aria-selected="true">▣ Mã đặt bàn</button>
+        <button id="search-by-phone" class="lookup-tab" type="button" role="tab" aria-selected="false">♧ Số điện thoại</button>
+      </div>
+      <form id="lookup-form" class="lookup-form" novalidate>
+        <div class="lookup-input-wrap">
+          <span id="lookup-input-icon" class="lookup-input-icon" aria-hidden="true">▣</span>
+          <label class="sr-only" id="lookup-label" for="lookup-value">Mã đặt bàn</label>
+          <input id="lookup-value" type="text" maxlength="20" placeholder="Nhập mã đặt bàn" autocomplete="off" required>
+        </div>
+        <button id="btn-lookup" type="submit" class="btn btn-primary">⌕ &nbsp;Tra cứu</button>
+      </form>
+      <div id="lookup-error" class="field-error" role="alert"></div>
+      <div id="lookup-verification" class="lookup-verification" hidden>
+        <p id="verification-copy">Để bảo vệ thông tin đặt bàn, vui lòng xác nhận số điện thoại đã dùng khi đặt.</p>
+        <label id="verification-label" class="field-label" for="verification-value">Số điện thoại xác nhận</label>
+        <input id="verification-value" type="tel" maxlength="20" autocomplete="tel" placeholder="090 123 4567">
+        <div id="verification-error" class="field-error" role="alert"></div>
+        <button id="btn-verify" class="btn btn-primary" type="button">Xác nhận thông tin</button>
+      </div>
+    </section>
+
+    <section id="lookup-result" class="lookup-result" hidden aria-live="polite"></section>
+
+    <section class="lookup-features" aria-label="Dịch vụ nhà hàng">
+      <article class="lookup-feature">
+        <span class="feature-icon" aria-hidden="true">♜</span>
+        <h2>Thực đơn chọn trước</h2>
+        <p>Khám phá thực đơn Theo Mùa và danh tuyển rượu vang Sommelier Tuyển Chọn để món ăn được chuẩn bị sẵn sàng khi quý khách an tọa.</p>
+        <a href="../../index.html#experience">Duyệt thực đơn →</a>
+      </article>
+      <article class="lookup-feature">
+        <span class="feature-icon" aria-hidden="true">♙</span>
+        <h2>Quy chuẩn trang phục</h2>
+        <p>Để bảo toàn không gian thanh lịch trang nhã, nhà hàng khuyến nghị trang phục Lịch thiệp (Smart Casual).</p>
+        <a href="reservation.html#dress-code">Xem chi tiết quy chuẩn →</a>
+      </article>
+      <article class="lookup-feature">
+        <span class="feature-icon" aria-hidden="true">♧</span>
+        <h2>Trợ lý yến tiệc riêng</h2>
+        <p>Đội ngũ Concierge luôn sẵn sàng hỗ trợ sắp xếp hoa tươi, chuẩn bị thiệp viết tay hoặc tư vấn phòng khách tiệc VIP.</p>
+        <a href="tel:19008888">Gọi chuyên viên tư vấn →</a>
+      </article>
+    </section>
+  </main>
+
+  <footer id="app-footer"></footer>
+  <script src="../../js/config.js"></script>
+  <script src="../../js/api.js"></script>
+  <script src="../../js/utils.js"></script>
+  <script src="../../js/layout.js"></script>
+  <script src="../../js/pages/reservation-lookup.js"></script>
+</body>
+</html>
