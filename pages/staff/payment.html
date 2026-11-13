@@ -3,18 +3,100 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TIÊU_ĐỀ | Quản lý nhà hàng</title>
+  <title>Thu ngân | Quản lý nhà hàng</title>
   <link rel="icon" href="../../assets/images/logo.svg">
   <link rel="stylesheet" href="../../css/style.css">
+  <style>
+    /* CSS riêng của trang Thu ngân (để trong trang này cho khỏi đụng file style.css dùng chung) */
+    .order-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+    .order-item { width: 100%; text-align: left; padding: 10px 12px; border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-card); font: inherit; cursor: pointer; }
+    .order-item:hover { background: var(--color-bg); }
+    .order-item.active { border-color: var(--color-primary); background: var(--color-accent); }
+    .order-item .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .voucher-row { display: flex; gap: 8px; }
+    .voucher-row input { flex: 1; }
+    .method-row { display: flex; gap: 20px; flex-wrap: wrap; }
+    .total-line { display: flex; justify-content: space-between; padding: 4px 0; }
+    .total-line.grand { font-size: 20px; font-weight: 700; border-top: 2px solid var(--color-primary); margin-top: 8px; padding-top: 8px; }
+    .receipt { max-width: 420px; margin: 0 auto; font-family: "Courier New", monospace; }
+    .receipt h2 { text-align: center; margin-bottom: 4px; }
+    .receipt .center { text-align: center; }
+
+    /* Khi in: chỉ giữ lại hoá đơn, ẩn menu, danh sách order và các nút */
+    @media print {
+      #app-header, #app-footer, #orders-panel, .no-print { display: none !important; }
+      body { background: #fff; display: block; }
+      main.container { max-width: none; padding: 0; }
+      .layout-2col { display: block; }
+      .card { border: none; padding: 0; margin: 0; }
+    }
+  </style>
 </head>
 <body data-root="../../">
   <header id="app-header"></header>
 
-  <main class="container">
-    <section class="card">
-      <h1>Thanh toán</h1>
-      <p id="welcome" class="muted"></p>
-      <p>Màn hình này đang được xây dựng.</p>
+  <main class="container layout-2col">
+    <!-- Bên trái: danh sách order chưa thanh toán -->
+    <section class="card" id="orders-panel">
+      <div class="list-header">
+        <h2>Order chưa thanh toán</h2>
+        <button id="btn-refresh" type="button" class="btn btn-small">Làm mới</button>
+      </div>
+      <div id="order-list" class="order-list"></div>
+    </section>
+
+    <!-- Bên phải: hoá đơn của order đang chọn, hoặc hoá đơn đã thanh toán để in -->
+    <section class="card" id="bill-panel">
+      <div id="empty-state" class="muted">Chọn một order ở bên trái để xem hoá đơn.</div>
+
+      <div id="bill-view" hidden>
+        <div class="list-header">
+          <h2 id="bill-title">Hoá đơn</h2>
+          <span id="bill-status"></span>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Món</th>
+                <th class="text-right">SL</th>
+                <th class="text-right">Đơn giá</th>
+                <th class="text-right">Thành tiền</th>
+              </tr>
+            </thead>
+            <tbody id="bill-lines"></tbody>
+          </table>
+        </div>
+
+        <div id="bill-totals"></div>
+
+        <label for="voucher-input">Mã voucher</label>
+        <div class="voucher-row">
+          <input id="voucher-input" type="text" maxlength="30" placeholder="VD: WELCOME10" autocomplete="off">
+          <button id="btn-voucher" type="button" class="btn">Áp dụng</button>
+        </div>
+        <div id="voucher-msg" class="muted"></div>
+
+        <label>Phương thức thanh toán</label>
+        <div class="method-row">
+          <div class="checkbox-row"><input id="m-cash" name="method" type="radio" value="cash" checked><label for="m-cash">Tiền mặt</label></div>
+          <div class="checkbox-row"><input id="m-card" name="method" type="radio" value="card"><label for="m-card">Thẻ</label></div>
+          <div class="checkbox-row"><input id="m-transfer" name="method" type="radio" value="transfer"><label for="m-transfer">Chuyển khoản</label></div>
+        </div>
+
+        <div class="form-actions">
+          <button id="btn-pay" type="button" class="btn btn-primary">Thanh toán</button>
+        </div>
+      </div>
+
+      <div id="receipt-view" hidden>
+        <div id="receipt" class="receipt"></div>
+        <div class="form-actions no-print">
+          <button id="btn-print" type="button" class="btn btn-primary">In hoá đơn</button>
+          <button id="btn-next" type="button" class="btn">Thanh toán order khác</button>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -26,11 +108,7 @@
   <script src="../../js/api.js"></script>
   <script src="../../js/utils.js"></script>
   <script src="../../js/layout.js"></script>
-  <script>
-    // Chỉ các vai trò này được vào (admin luôn được). Sai vai trò thì tự chuyển về màn hình của mình.
-    Auth.requireRole(["cashier", "manager"]);
-    const user = Auth.getUser();
-    if (user) document.getElementById("welcome").textContent = `Xin chào ${user.full_name} (${Auth.roleLabel(user)})`;
-  </script>
+  <script>Auth.requireRole(["cashier"]);</script> <!-- thu ngân (và admin) được vào; vai trò khác tự về màn hình của mình -->
+  <script src="../../js/pages/payment.js"></script>
 </body>
 </html>
