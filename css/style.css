@@ -638,3 +638,7 @@ tbody tr:hover { background: rgba(243, 227, 179, 0.15); }
 .user-name { font-weight: 600; color: var(--color-text); text-decoration: none; }
 .demo-accounts { margin-top: 20px; font-size: 14px; color: var(--color-muted); }
 .demo-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+.user-box { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+.btn-logout { padding: 6px 12px; border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-card); cursor: pointer; }
+.btn-logout:hover { background: var(--color-bg); }

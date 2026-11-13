@@ -58,7 +58,21 @@ const Auth = (() => {
       const query = reason ? `?reason=${reason}` : "";
       window.location.replace(`${root()}pages/login.html${query}`);
     },
-    logout(reason) { this.clear(); this.goLogin(reason); },
+    async logout(reason) {
+      const access = get(KEY.access), refresh = get(KEY.refresh);
+      // Hết hạn thì token đã vô hiệu rồi, không cần gọi server (tránh lặp với api.js)
+      if (refresh && reason !== "expired") {
+        try {
+          await fetch(`${CONFIG.API_BASE_URL}/auth/logout`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${access}` },
+            body: JSON.stringify({ refresh_token: refresh }),
+          });
+        } catch { /* lỗi mạng vẫn đăng xuất ở client */ }
+      }
+      this.clear();
+      this.goLogin(reason);
+    },
 
     // Gọi ở cuối mỗi trang nội bộ. admin luôn được vào mọi trang.
     requireRole(allowedRoles) {
