@@ -12,6 +12,7 @@
 const MENU = [
   { href: "index.html", label: "Trang chủ" },
   { href: "pages/admin/branches.html", label: "Chi nhánh", roles: ["admin"] },
+  { href: "pages/admin/pos.html", label: "Gọi món" },
 ];
 
 function renderLayout() {

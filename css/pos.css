@@ -1,0 +1,176 @@
+/* ===================================================================
+   MÀN HÌNH GỌI MÓN CHO PHỤC VỤ (pages/admin/pos.html)
+   File này TỰ ĐỦ: không cần variables.css / components.css của giao diện chung.
+   Bảng màu đúng concept: đen than, vàng champagne, nude, nền ngà.
+   Class riêng của trang đều bắt đầu bằng "po-" nên không đụng class của nhóm khác.
+   =================================================================== */
+:root {
+  --po-ink: #1a1a1a;
+  --po-champagne: #f3e3b3;
+  --po-gold: #d4af37;
+  --po-nude: #e8c9a9;
+  --po-nude-soft: #f6ebdd;
+  --po-ivory: #faf6ee;
+  --po-card: #ffffff;
+  --po-border: #e6dccb;
+  --po-border-soft: #f0e8da;
+  --po-muted: #6b6358;
+  --po-danger: #8b2b1e;
+  --po-success: #2f5d3a;
+  --po-warning: #7a5a00;
+  --po-info: #2f4a63;
+  --po-radius: 8px;
+  --po-serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+}
+[hidden] { display: none !important; }
+
+/* ---------- Khung trang ---------- */
+main.po-wide { max-width: 1240px; }
+.po-tag { display: inline-block; font-size: 0.72rem; font-weight: 600; letter-spacing: .14em; color: var(--po-gold); margin-bottom: 4px; }
+.po-title { font-family: var(--po-serif); font-size: 2.2rem; line-height: 1.15; margin: 0; color: var(--po-ink); }
+.po-head { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+.po-user { display: flex; align-items: center; gap: 12px; }
+.po-user-meta { display: flex; flex-direction: column; text-align: right; line-height: 1.3; }
+.po-user-meta span { font-size: 0.8rem; color: var(--po-muted); }
+.po-card { background: var(--po-card); border: 1px solid var(--po-border); border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(26, 26, 26, .04); }
+.po-card-title { font-family: var(--po-serif); font-size: 1.5rem; margin: 0; color: var(--po-ink); }
+.po-card-sub { color: var(--po-muted); font-size: 0.875rem; margin-top: 2px; }
+.po-card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.po-muted { color: var(--po-muted); }
+.po-empty { text-align: center; color: var(--po-muted); padding: 36px 12px; }
+
+/* ---------- Nút, badge, ô nhập ---------- */
+.po-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 9px 18px; min-height: 40px; border-radius: var(--po-radius); border: 1px solid var(--po-border);
+  background: var(--po-card); color: var(--po-ink); font: inherit; font-weight: 500; cursor: pointer; transition: all .15s ease;
+}
+.po-btn:hover:not(:disabled) { background: var(--po-ivory); border-color: var(--po-nude); }
+.po-btn:disabled { opacity: .5; cursor: not-allowed; }
+.po-btn-primary { background: var(--po-ink); border-color: var(--po-ink); color: var(--po-champagne); }
+.po-btn-primary:hover:not(:disabled) { background: #000; border-color: #000; }
+.po-btn-danger { color: var(--po-danger); border-color: #e2c3bd; background: #fcf1ef; }
+.po-btn-danger:hover:not(:disabled) { background: #f7e1dd; border-color: #d9a79d; }
+.po-btn-gold { background: linear-gradient(135deg, #f3e3b3, #e8d59e); border-color: #d9c78a; color: var(--po-ink); font-weight: 600; }
+.po-btn-sm { padding: 4px 12px; min-height: 32px; font-size: 0.85rem; }
+.po-btn-block { width: 100%; }
+
+.po-badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+.po-badge-success { background: #e4efe6; color: var(--po-success); }
+.po-badge-warning { background: #f7eed2; color: var(--po-warning); }
+.po-badge-danger { background: #f4e1de; color: var(--po-danger); }
+.po-badge-info { background: #e2eaf1; color: var(--po-info); }
+.po-badge-nude { background: var(--po-nude-soft); color: #7b5a3a; }
+.po-badge-dark { background: var(--po-ink); color: var(--po-champagne); }
+.po-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: currentColor; margin-right: 6px; }
+
+.po-field { margin-bottom: 14px; }
+.po-label { display: block; margin: 0 0 6px; font-weight: 600; font-size: 0.875rem; }
+.po-input { display: block; width: 100%; padding: 9px 12px; min-height: 40px; border: 1px solid var(--po-border); border-radius: var(--po-radius); background: #fff; font: inherit; color: var(--po-ink); }
+.po-input:focus { outline: 2px solid var(--po-nude); border-color: var(--po-ink); }
+textarea.po-input { min-height: 84px; resize: vertical; }
+.po-alert { padding: 10px 14px; border-radius: var(--po-radius); margin-bottom: 14px; background: #f4e1de; color: var(--po-danger); font-size: 0.9rem; }
+
+/* ---------- Đăng nhập ---------- */
+.po-login { max-width: 440px; margin: 24px auto; }
+.po-login .po-title { font-size: 1.9rem; margin: 6px 0; }
+
+/* ---------- Bố cục 2 cột ---------- */
+.po-layout { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 24px; align-items: start; }
+@media (max-width: 991px) { .po-layout { grid-template-columns: 1fr; } }
+.po-legend { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ---------- Sơ đồ bàn ---------- */
+.po-table-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 14px; }
+.po-table {
+  background: var(--po-card); border: 1.5px solid var(--po-border); border-radius: 10px; padding: 16px 10px;
+  text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  font: inherit; color: inherit; min-height: 44px; transition: all .15s ease;
+}
+.po-table:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(26, 26, 26, .1); }
+.po-table.status-available { border-color: #a0c8a4; background: #f8fcf8; }
+.po-table.status-occupied { border-color: #e2ada0; background: #fcf7f6; }
+.po-table.status-reserved { border-color: #ead08c; background: #fcfaf2; }
+.po-table.selected { box-shadow: 0 0 0 3px rgba(212, 175, 55, .45); border-color: var(--po-gold); }
+.po-table-num { font-family: var(--po-serif); font-size: 1.6rem; font-weight: 700; color: var(--po-ink); line-height: 1.2; }
+.po-table-meta { font-size: 0.8rem; color: var(--po-muted); }
+
+/* ---------- Menu ---------- */
+.po-menu-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.po-menu-title { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.po-search { max-width: 240px; }
+.po-cats { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.po-cat {
+  border: 1px solid var(--po-nude); background: transparent; color: var(--po-ink); border-radius: 999px;
+  padding: 8px 18px; min-height: 40px; cursor: pointer; font: inherit; font-weight: 500; transition: all .15s ease;
+}
+.po-cat:hover { background: var(--po-nude-soft); }
+.po-cat.active { background: var(--po-ink); color: var(--po-champagne); border-color: var(--po-ink); }
+
+.po-dish-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
+.po-dish {
+  background: var(--po-card); border: 1px solid var(--po-border); border-radius: 10px; padding: 12px; text-align: left;
+  cursor: pointer; font: inherit; color: inherit; transition: all .15s ease; display: flex; flex-direction: column; gap: 4px;
+}
+.po-dish:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(26, 26, 26, .1); border-color: #d8cca8; }
+.po-dish:disabled { opacity: .55; cursor: not-allowed; }
+.po-dish-img {
+  position: relative; height: 110px; border-radius: 6px; margin-bottom: 8px; overflow: hidden;
+  background: linear-gradient(135deg, var(--po-champagne), var(--po-nude)); display: flex; align-items: center; justify-content: center;
+  font-family: var(--po-serif); font-size: 2.6rem; font-weight: 700; color: var(--po-ink);
+}
+.po-dish-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.po-dish-name { font-weight: 600; font-size: 0.95rem; }
+.po-dish-price { color: var(--po-muted); font-size: 0.875rem; }
+
+/* ---------- Phiếu gọi món ---------- */
+.po-sheet { padding: 0; overflow: hidden; position: sticky; top: 16px; }
+@media (max-width: 991px) { .po-sheet { position: static; } }
+.po-sheet-head { padding: 18px 20px; border-bottom: 1px solid var(--po-border); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.po-sheet-head h4 { margin: 0; font-family: var(--po-serif); font-size: 1.35rem; }
+.po-sheet-sub { font-size: 0.8rem; color: var(--po-muted); }
+.po-items { max-height: 460px; overflow-y: auto; padding: 4px 20px; }
+.po-item { padding: 12px 0; border-bottom: 1px solid var(--po-border-soft); display: flex; flex-direction: column; gap: 6px; }
+.po-item:last-child { border-bottom: none; }
+.po-item.cancelled .po-item-name { text-decoration: line-through; color: var(--po-muted); }
+.po-item-top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+.po-item-name { font-weight: 600; }
+.po-item-opts { font-size: 0.8rem; color: var(--po-muted); }
+.po-item-note { font-size: 0.8rem; font-style: italic; color: #4a443c; }
+.po-item-bottom { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.po-item-total { font-weight: 600; white-space: nowrap; }
+.po-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.po-qty { display: inline-flex; align-items: center; gap: 4px; }
+.po-qty button { width: 32px; height: 32px; border: 1px solid var(--po-border); background: var(--po-card); border-radius: 6px; cursor: pointer; font-size: 1rem; color: var(--po-ink); }
+.po-qty button:hover:not(:disabled) { background: var(--po-nude-soft); }
+.po-qty button:disabled { opacity: .4; cursor: not-allowed; }
+.po-qty span { min-width: 28px; text-align: center; font-weight: 600; }
+.po-sheet-foot { padding: 18px 20px; border-top: 1px solid var(--po-border); background: var(--po-ivory); }
+.po-subtotal { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.po-subtotal strong { font-family: var(--po-serif); font-size: 1.6rem; }
+
+/* ---------- Modal chọn tuỳ chọn ---------- */
+.po-modal { position: fixed; inset: 0; background: rgba(14, 14, 14, .72); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 1000; opacity: 0; visibility: hidden; transition: opacity .2s ease, visibility .2s ease; }
+.po-modal.open { opacity: 1; visibility: visible; }
+.po-dialog { background: var(--po-card); border-radius: 14px; border: 1px solid var(--po-border); box-shadow: 0 24px 60px rgba(0, 0, 0, .35); width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto; }
+.po-dialog-head { padding: 20px 24px; border-bottom: 1px solid var(--po-border); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.po-dialog-title { font-family: var(--po-serif); font-size: 1.5rem; font-weight: 600; margin: 0; }
+.po-close { background: none; border: none; font-size: 1.6rem; line-height: 1; color: var(--po-muted); cursor: pointer; padding: 4px 8px; border-radius: 6px; }
+.po-close:hover { color: var(--po-ink); background: rgba(26, 26, 26, .06); }
+.po-dialog-body { padding: 22px 24px; }
+.po-dialog-foot { padding: 16px 24px; border-top: 1px solid var(--po-border-soft); display: flex; justify-content: flex-end; gap: 12px; background: rgba(250, 246, 238, .6); }
+@media (max-width: 600px) { .po-dialog-head, .po-dialog-body, .po-dialog-foot { padding-left: 16px; padding-right: 16px; } }
+
+.po-opt-group { margin-bottom: 18px; }
+.po-opt-title { font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--po-muted); margin-bottom: 4px; }
+.po-opt-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 40px; }
+.po-check { display: flex; align-items: center; gap: 10px; flex: 1; margin: 0; font-weight: 500; font-size: 0.95rem; cursor: pointer; }
+.po-check input { width: 18px; height: 18px; margin: 0; padding: 0; accent-color: var(--po-ink); cursor: pointer; flex: none; }
+.po-opt-price { font-size: 0.85rem; color: var(--po-muted); white-space: nowrap; }
+.po-dish-desc { color: var(--po-muted); font-size: 0.9rem; margin: 0 0 16px; }
+.po-modal-qty { display: flex; align-items: center; justify-content: space-between; }
+.po-modal-total { font-family: var(--po-serif); font-size: 1.5rem; font-weight: 700; }
+
+/* ---------- Thông báo nhỏ (showToast trong utils.js) ---------- */
+body > .toast { position: fixed; top: 76px; right: 24px; bottom: auto; z-index: 1200; border-radius: 10px; padding: 12px 18px; }
+@media (max-width: 480px) { body > .toast { left: 16px; right: 16px; } }
