@@ -3,19 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TIÊU_ĐỀ | Quản lý nhà hàng</title>
+  <title>Tổng quan | Quản lý nhà hàng</title>
   <link rel="icon" href="../../assets/images/logo.svg">
   <link rel="stylesheet" href="../../css/style.css">
 </head>
-<body data-root="../../">
+<body data-root="../../" data-layout="admin">
   <header id="app-header"></header>
 
   <main class="container">
     <section class="card">
-      <h1>Trang quản lý	</h1>
+      <h1>Trang quản lý</h1>
       <p id="welcome" class="muted"></p>
-      <p>Màn hình này đang được xây dựng.</p>
-      <p id="admin-links" hidden>Quản trị: <a href="branches.html">Quản lý chi nhánh</a></p>
+      <div class="shortcut-grid" id="shortcuts"></div>
     </section>
   </main>
 
@@ -28,11 +27,15 @@
   <script src="../../js/utils.js"></script>
   <script src="../../js/layout.js"></script>
   <script>
-    // Chỉ các vai trò này được vào (admin luôn được). Sai vai trò thì tự chuyển về màn hình của mình.
     Auth.requireRole(["manager"]);
     const user = Auth.getUser();
-    if (user?.role.name === "admin") document.getElementById("admin-links").hidden = false;
     if (user) document.getElementById("welcome").textContent = `Xin chào ${user.full_name} (${Auth.roleLabel(user)})`;
+    // Lối tắt = các mục của sidebar (trừ "Tổng quan"), cùng quy tắc phân quyền
+    const role = user?.role?.name;
+    document.getElementById("shortcuts").innerHTML = SIDEBAR
+      .filter((item) => canSee(item, role) && !item.href.endsWith("admin/index.html"))
+      .map((item) => `<a href="${document.body.dataset.root}${item.href}"><strong>${escapeHtml(item.label)}</strong></a>`)
+      .join("");
   </script>
 </body>
 </html>
