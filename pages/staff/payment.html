@@ -26,6 +26,9 @@
 
     /* Header đen than như trang chủ (xoá khối này nếu nhóm đổi header ở style.css dùng chung) */
     body #app-header { background: var(--color-primary); border-bottom: 0; }
+    /* Mọi chữ trong header đều sáng để không chìm vào nền đen (tên người dùng, vai trò...) */
+    #app-header { color: #fff; }
+    #app-header span, #app-header a:not([class*="btn"]) { color: inherit; }
     #app-header .brand { color: #fff; font-family: var(--font-display); }
     #app-header .nav a { color: rgba(255, 255, 255, .72); }
     #app-header .nav a:hover { background: rgba(255, 255, 255, .08); color: #fff; }
