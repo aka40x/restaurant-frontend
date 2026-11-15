@@ -16,6 +16,13 @@ const MENU = [
   { href: "pages/staff/payment.html", label: "Thu ngân", roles: ["cashier"] },
 ];
 
+// Chặn chèn HTML lạ khi đưa tên người dùng vào innerHTML
+function escapeHtml(text) {
+  return String(text ?? "").replace(/[&<>"']/g, (ch) => (
+    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]
+  ));
+}
+
 function renderLayout() {
   const root = document.body.dataset.root || "./";
   const currentPath = window.location.pathname;
@@ -26,6 +33,15 @@ function renderLayout() {
     return `<a href="${root}${item.href}" class="${isActive ? "active" : ""}">${item.label}</a>`;
   }).join("");
 
+  // Chỉ hiện tên + nút Đăng xuất khi đã đăng nhập (trang chưa nạp auth.js thì bỏ qua)
+  const user = typeof Auth !== "undefined" ? Auth.getUser() : null;
+  const userBox = user
+    ? `<div class="user-box">
+         <span>${escapeHtml(user.full_name)} · ${escapeHtml(Auth.roleLabel(user))}</span>
+         <button type="button" id="btn-logout" class="btn-logout">Đăng xuất</button>
+       </div>`
+    : "";
+
   document.getElementById("app-header").innerHTML = `
     <div class="container header-inner">
       <a href="${root}index.html" class="brand">
@@ -33,10 +49,13 @@ function renderLayout() {
         <span>${CONFIG.APP_NAME}</span>
       </a>
       <nav class="nav">${links}</nav>
+      ${userBox}
     </div>`;
 
   document.getElementById("app-footer").innerHTML = `
     <div class="container">© ${new Date().getFullYear()} Nhóm 6 · Hệ thống quản lý nhà hàng · HN-KS25-CNTT1</div>`;
+
+  document.getElementById("btn-logout")?.addEventListener("click", () => Auth.logout());
 }
 
 renderLayout();
