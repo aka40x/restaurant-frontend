@@ -9,6 +9,7 @@ const STATUS_LABEL = { open: "Đang gọi món", sent: "Đã gửi bếp", serve
 const METHOD_LABEL = { cash: "Tiền mặt", card: "Thẻ", transfer: "Chuyển khoản" };
 
 const orderList = document.getElementById("order-list");
+const orderCount = document.getElementById("order-count");
 const refreshButton = document.getElementById("btn-refresh");
 const emptyState = document.getElementById("empty-state");
 const billView = document.getElementById("bill-view");
@@ -17,6 +18,7 @@ const billTitle = document.getElementById("bill-title");
 const billStatus = document.getElementById("bill-status");
 const billLines = document.getElementById("bill-lines");
 const billTotals = document.getElementById("bill-totals");
+const billGrand = document.getElementById("bill-grand");
 const voucherInput = document.getElementById("voucher-input");
 const voucherButton = document.getElementById("btn-voucher");
 const voucherMsg = document.getElementById("voucher-msg");
@@ -38,6 +40,9 @@ function showPanel(name) {
   receiptView.hidden = name !== "receipt";
 }
 
+const statusChip = (status) =>
+  `<span class="chip chip-${escapeHtml(status)}">${escapeHtml(STATUS_LABEL[status] || status)}</span>`;
+
 // ---------- Danh sách order ----------
 async function loadOrders() {
   orderList.innerHTML = `<p class="muted">Đang tải...</p>`;
@@ -47,23 +52,25 @@ async function loadOrders() {
     orders = groups.flat().sort((a, b) => a.id - b.id);
     renderOrders();
   } catch (error) {
+    orderCount.textContent = "";
     orderList.innerHTML = `<p class="text-error">${escapeHtml(error.message)}</p>`;
   }
 }
 
 function renderOrders() {
+  orderCount.textContent = orders.length > 0 ? `${orders.length} order đang chờ thanh toán` : "";
   if (orders.length === 0) {
     orderList.innerHTML = `<p class="muted">Không có order nào cần thanh toán</p>`;
     return;
   }
-  // Order chỉ có table_id (chưa có API bàn trả số bàn như A1) nên hiện "Bàn #id"
+  // Order chỉ có table_id (chưa có API bàn trả số bàn như A1) nên hiện "Bàn 1" theo id
   orderList.innerHTML = orders.map((o) => `
     <button type="button" class="order-item ${selectedOrder?.id === o.id ? "active" : ""}" data-id="${o.id}">
-      <div class="row">
-        <strong>Bàn #${o.table_id}</strong>
-        <span class="badge badge-info">${escapeHtml(STATUS_LABEL[o.status] || o.status)}</span>
+      <div class="order-top">
+        <span class="order-table">Bàn ${o.table_id}</span>
+        ${statusChip(o.status)}
       </div>
-      <div class="muted">Order #${o.id} · ${formatDateTime(o.created_at)}</div>
+      <div class="order-meta">Order #${o.id} · ${formatDateTime(o.created_at)}</div>
     </button>`).join("");
 }
 
@@ -80,6 +87,7 @@ async function selectOrder(id) {
   if (!selectedOrder) return;
   appliedVoucher = null;
   voucherInput.value = "";
+  voucherMsg.className = "muted";
   voucherMsg.textContent = "";
   renderOrders();
   try {
@@ -106,24 +114,31 @@ function lineRow(line) {
     </tr>`;
 }
 
-function totalsHtml(subtotal, discount, total, voucherCode) {
+// Hai dòng tạm tính và giảm giá (dùng cho cả hoá đơn tạm lẫn hoá đơn in)
+function summaryRows(subtotal, discount, voucherCode) {
   const discountRow = Number(discount) > 0
     ? `<div class="total-line"><span>Giảm giá${voucherCode ? ` (${escapeHtml(voucherCode)})` : ""}</span><span>- ${formatMoney(discount)}</span></div>`
     : "";
   return `
     <div class="total-line"><span>Tạm tính</span><span>${formatMoney(subtotal)}</span></div>
-    ${discountRow}
-    <div class="total-line grand"><span>Tổng thanh toán</span><span>${formatMoney(total)}</span></div>`;
+    ${discountRow}`;
+}
+
+function totalsHtml(subtotal, discount, total, voucherCode) {
+  return `
+    ${summaryRows(subtotal, discount, voucherCode)}
+    <div class="total-line"><strong>Tổng thanh toán</strong><strong>${formatMoney(total)}</strong></div>`;
 }
 
 function renderBill() {
   const bill = currentBill;
-  billTitle.textContent = `Bàn #${selectedOrder.table_id} · Order #${bill.order_id}`;
-  billStatus.innerHTML = `<span class="badge badge-info">${escapeHtml(STATUS_LABEL[selectedOrder.status] || selectedOrder.status)}</span>`;
+  billTitle.textContent = `Bàn ${selectedOrder.table_id} · Order #${bill.order_id}`;
+  billStatus.innerHTML = statusChip(selectedOrder.status);
   billLines.innerHTML = bill.lines.length === 0
     ? `<tr><td colspan="4" class="muted">Order chưa có món nào</td></tr>`
     : bill.lines.map(lineRow).join("");
-  billTotals.innerHTML = totalsHtml(bill.subtotal, bill.discount_amount, bill.total_amount, bill.voucher_code);
+  billTotals.innerHTML = summaryRows(bill.subtotal, bill.discount_amount, bill.voucher_code);
+  billGrand.textContent = formatMoney(bill.total_amount);
   payButton.disabled = bill.lines.length === 0;
 }
 
@@ -140,6 +155,7 @@ voucherButton.addEventListener("click", async () => {
     currentBill = await fetchBill(code || null);
     appliedVoucher = code || null;
     renderBill();
+    voucherMsg.className = "text-ok";
     voucherMsg.textContent = appliedVoucher ? "Đã áp dụng voucher" : "Đã bỏ voucher";
   } catch (error) {
     // Hoá đơn giữ nguyên như trước, chỉ báo lý do: không tồn tại, hết hạn, chưa đủ tối thiểu, hết lượt...
@@ -192,14 +208,17 @@ async function showReceipt(payment, bill, tableId) {
 
   receipt.innerHTML = `
     <h2>${escapeHtml(CONFIG.APP_NAME)}</h2>
-    <div class="center muted">${branchName ? escapeHtml(branchName) + "<br>" : ""}HOÁ ĐƠN THANH TOÁN</div>
+    <div class="center muted">${branchName ? escapeHtml(branchName) + "<br>" : ""}Hoá đơn thanh toán</div>
     <hr>
-    <div>Bàn #${tableId} · Order #${payment.order_id}</div>
-    <div>Mã thanh toán: #${payment.id}</div>
-    <div>Thời gian: ${formatDateTime(payment.paid_at)}</div>
-    <div>Thu ngân: ${escapeHtml(user?.full_name || "")}</div>
+    <div class="receipt-meta">
+      <div><span>Bàn</span><span>${tableId}</span></div>
+      <div><span>Order</span><span>#${payment.order_id}</span></div>
+      <div><span>Mã thanh toán</span><span>#${payment.id}</span></div>
+      <div><span>Thời gian</span><span>${formatDateTime(payment.paid_at)}</span></div>
+      <div><span>Thu ngân</span><span>${escapeHtml(user?.full_name || "")}</span></div>
+    </div>
     <div class="table-wrap">
-      <table>
+      <table class="bill-table">
         <thead>
           <tr><th>Món</th><th class="text-right">SL</th><th class="text-right">Đơn giá</th><th class="text-right">Thành tiền</th></tr>
         </thead>
@@ -207,8 +226,11 @@ async function showReceipt(payment, bill, tableId) {
       </table>
     </div>
     ${totalsHtml(payment.subtotal, payment.discount_amount, payment.total_amount, bill.voucher_code)}
-    <div>Phương thức: ${escapeHtml(METHOD_LABEL[payment.method] || payment.method)}</div>
-    <p class="center">Cảm ơn quý khách đã sử dụng dịch vụ!</p>`;
+    <hr>
+    <div class="receipt-meta">
+      <div><span>Phương thức</span><span>${escapeHtml(METHOD_LABEL[payment.method] || payment.method)}</span></div>
+    </div>
+    <p class="center">Cảm ơn quý khách!</p>`;
   showPanel("receipt");
 }
 
