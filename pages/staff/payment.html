@@ -3,18 +3,205 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TIÊU_ĐỀ | Quản lý nhà hàng</title>
+  <title>Thu ngân | Quản lý nhà hàng</title>
   <link rel="icon" href="../../assets/images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../css/style.css">
+  <style>
+    /* CSS riêng của trang Thu ngân (để trong trang này cho khỏi đụng file style.css dùng chung).
+       Phong cách theo trang chủ: header đen than, nền ngà, chữ serif Playfair + Inter, vàng champagne làm điểm nhấn. */
+    :root {
+      --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+      --font-ui: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      --gold: #b99a55;
+    }
+    body { font-family: var(--font-ui); }
+    h1, h2 { font-family: var(--font-display); font-weight: 600; color: var(--color-primary); }
+    .card { border-radius: 14px; padding: 24px; }
+    main.container { padding-top: 32px; }
+    .page-title { grid-column: 1 / -1; margin: 0 0 4px; font-size: 34px; }
+    .layout-2col { grid-template-columns: 340px 1fr; }
+
+    /* Header đen than như trang chủ (xoá khối này nếu nhóm đổi header ở style.css dùng chung) */
+    body #app-header { background: var(--color-primary); border-bottom: 0; }
+    /* Mọi chữ trong header đều sáng để không chìm vào nền đen (tên người dùng, vai trò...) */
+    #app-header { color: #fff; }
+    #app-header span, #app-header a:not([class*="btn"]) { color: inherit; }
+    #app-header .brand { color: #fff; font-family: var(--font-display); }
+    #app-header .nav a { color: rgba(255, 255, 255, .72); }
+    #app-header .nav a:hover { background: rgba(255, 255, 255, .08); color: #fff; }
+    #app-header .nav a.active { background: transparent; color: #fff; font-weight: 600; }
+    #app-header .user-name { color: #fff; }
+    #app-header .badge { background: rgba(243, 227, 179, .16); color: var(--color-accent); }
+    #app-header .btn { background: #fff; color: var(--color-primary); border-color: #fff; border-radius: 999px; }
+    #app-header .btn:hover { background: var(--color-accent); border-color: var(--color-accent); }
+
+    /* Danh sách order (bên trái) */
+    .panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+    .panel-head h2 { margin: 0; font-size: 22px; }
+    .btn-ghost { background: none; border: 0; padding: 4px 0; font: inherit; font-size: 13px; color: var(--color-muted); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+    .btn-ghost:hover { color: var(--color-primary); }
+    #order-count { margin: 4px 0 0; }
+    .order-list { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+    .order-item { width: 100%; text-align: left; padding: 14px 16px; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-card); font: inherit; color: var(--color-text); cursor: pointer; transition: background .15s, border-color .15s; }
+    .order-item:hover { border-color: var(--color-secondary); background: var(--color-bg); }
+    .order-item.active { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+    .order-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .order-table { font-family: var(--font-display); font-size: 20px; font-weight: 600; }
+    .order-meta { margin-top: 4px; font-size: 13px; color: var(--color-muted); }
+    .order-item.active .order-meta { color: rgba(255, 255, 255, .7); }
+
+    /* Nhãn trạng thái order */
+    .chip { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+    .chip-open { background: #f3e3b3; color: #5c4a14; }
+    .chip-sent { background: #dfe8f1; color: #2f4a63; }
+    .chip-served { background: #dcebdf; color: #2f5d3a; }
+
+    /* Chưa chọn order */
+    .empty { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 300px; }
+    .empty-title { margin: 0 0 4px; font-family: var(--font-display); font-size: 24px; font-weight: 600; }
+    .empty .muted { margin: 0; max-width: 32ch; }
+
+    /* Hoá đơn (bên phải) */
+    .bill-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .bill-head h2 { margin: 0; font-size: 26px; }
+    .bill-table { font-variant-numeric: tabular-nums; }
+    .bill-table th { font-size: 13px; font-weight: 500; text-transform: none; color: var(--color-muted); }
+    .bill-table td { vertical-align: middle; }
+    .bill-rows { margin-top: 12px; }
+    .total-line { display: flex; justify-content: space-between; padding: 6px 0; font-variant-numeric: tabular-nums; }
+
+    .field { margin-top: 20px; }
+    .field label, .method-field legend { display: block; margin: 0 0 8px; padding: 0; font-size: 14px; font-weight: 600; }
+    .voucher-row { display: flex; gap: 8px; }
+    .voucher-row input { flex: 1; padding: 10px 16px; border-radius: 999px; }
+    .voucher-row .btn { padding: 10px 22px; border-radius: 999px; }
+    #voucher-msg { min-height: 20px; margin-top: 6px; }
+    .text-ok { color: var(--color-success); font-size: 14px; }
+
+    /* Chọn phương thức: ba nút liền hàng, nút đang chọn đổi sang nền đen */
+    .method-field { min-width: 0; margin: 20px 0 0; padding: 0; border: 0; }
+    .method-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .method { position: relative; display: block; margin: 0; font-weight: 500; }
+    .method input { position: absolute; width: 1px; height: 1px; padding: 0; border: 0; opacity: 0; }
+    .method span { display: block; padding: 10px 8px; text-align: center; border: 1px solid var(--color-border); border-radius: 999px; background: var(--color-card); cursor: pointer; transition: background .15s, color .15s, border-color .15s; }
+    .method span:hover { border-color: var(--color-secondary); }
+    .method input:checked + span { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-accent); }
+    .method input:focus-visible + span { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+    /* Dải đen ở cuối hoá đơn: tổng tiền và nút Thanh toán, giống dải đen ở trang chủ */
+    .pay-band { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 24px; padding: 22px 26px; border-radius: 14px; background: var(--color-primary); color: #fff; }
+    .band-label { font-size: 14px; color: var(--color-accent); }
+    .band-amount { font-family: var(--font-display); font-size: 36px; font-weight: 600; line-height: 1.15; font-feature-settings: "lnum"; }
+    .btn-pay { padding: 12px 32px; border: 0; border-radius: 999px; background: #fff; color: var(--color-primary); font: inherit; font-weight: 600; cursor: pointer; transition: background .15s; }
+    .btn-pay:hover:not(:disabled) { background: var(--color-accent); }
+    .btn-pay:disabled { opacity: .45; cursor: not-allowed; }
+    .btn-pay:focus-visible, .btn:focus-visible, .btn-ghost:focus-visible, .order-item:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+    .pay-band .btn-pay:focus-visible { outline-color: var(--color-accent); }
+
+    /* Hoá đơn đã thanh toán (để in) */
+    .receipt { max-width: 440px; margin: 0 auto; font-variant-numeric: tabular-nums; }
+    .receipt h2 { margin: 0 0 2px; text-align: center; font-size: 28px; }
+    .receipt .center { text-align: center; }
+    .receipt hr { margin: 14px 0; border: 0; border-top: 1px dashed var(--color-border); }
+    .receipt-meta div { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; padding: 2px 0; }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+
+    /* Khi in: chỉ giữ lại hoá đơn, ẩn menu, danh sách order và các nút */
+    @media print {
+      #app-header, #app-footer, #orders-panel, .page-title, .no-print { display: none !important; }
+      body { background: #fff; display: block; }
+      main.container { max-width: none; padding: 0; }
+      .layout-2col { display: block; }
+      .card { border: none; padding: 0; margin: 0; }
+      .receipt hr { border-top-color: #000; }
+    }
+  </style>
 </head>
 <body data-root="../../">
   <header id="app-header"></header>
 
-  <main class="container">
-    <section class="card">
-      <h1>Thanh toán</h1>
-      <p id="welcome" class="muted"></p>
-      <p>Màn hình này đang được xây dựng.</p>
+  <main class="container layout-2col">
+    <h1 class="page-title">Thu ngân</h1>
+
+    <!-- Bên trái: danh sách order chưa thanh toán -->
+    <section class="card" id="orders-panel">
+      <div class="panel-head">
+        <h2>Order chưa thanh toán</h2>
+        <button id="btn-refresh" type="button" class="btn-ghost">Làm mới</button>
+      </div>
+      <p id="order-count" class="muted"></p>
+      <div id="order-list" class="order-list"></div>
+    </section>
+
+    <!-- Bên phải: hoá đơn của order đang chọn, hoặc hoá đơn đã thanh toán để in -->
+    <section class="card" id="bill-panel">
+      <div id="empty-state" class="empty">
+        <p class="empty-title">Chưa chọn order</p>
+        <p class="muted">Chọn một order ở bên trái để xem hoá đơn và thanh toán.</p>
+      </div>
+
+      <div id="bill-view" hidden>
+        <div class="bill-head">
+          <h2 id="bill-title">Hoá đơn</h2>
+          <span id="bill-status"></span>
+        </div>
+
+        <div class="table-wrap">
+          <table class="bill-table">
+            <thead>
+              <tr>
+                <th>Món</th>
+                <th class="text-right">SL</th>
+                <th class="text-right">Đơn giá</th>
+                <th class="text-right">Thành tiền</th>
+              </tr>
+            </thead>
+            <tbody id="bill-lines"></tbody>
+          </table>
+        </div>
+
+        <div id="bill-totals" class="bill-rows"></div>
+
+        <div class="field">
+          <label for="voucher-input">Mã voucher</label>
+          <div class="voucher-row">
+            <input id="voucher-input" type="text" maxlength="30" placeholder="VD: WELCOME10" autocomplete="off">
+            <button id="btn-voucher" type="button" class="btn">Áp dụng</button>
+          </div>
+          <div id="voucher-msg" class="muted" role="status"></div>
+        </div>
+
+        <fieldset class="method-field">
+          <legend>Phương thức thanh toán</legend>
+          <div class="method-row">
+            <label class="method"><input name="method" type="radio" value="cash" checked><span>Tiền mặt</span></label>
+            <label class="method"><input name="method" type="radio" value="card"><span>Thẻ</span></label>
+            <label class="method"><input name="method" type="radio" value="transfer"><span>Chuyển khoản</span></label>
+          </div>
+        </fieldset>
+
+        <div class="pay-band">
+          <div>
+            <div class="band-label">Tổng thanh toán</div>
+            <div id="bill-grand" class="band-amount">0 ₫</div>
+          </div>
+          <button id="btn-pay" type="button" class="btn-pay">Thanh toán</button>
+        </div>
+      </div>
+
+      <div id="receipt-view" hidden>
+        <div id="receipt" class="receipt"></div>
+        <div class="form-actions no-print">
+          <button id="btn-print" type="button" class="btn btn-primary">In hoá đơn</button>
+          <button id="btn-next" type="button" class="btn">Thanh toán order khác</button>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -26,11 +213,7 @@
   <script src="../../js/api.js"></script>
   <script src="../../js/utils.js"></script>
   <script src="../../js/layout.js"></script>
-  <script>
-    // Chỉ các vai trò này được vào (admin luôn được). Sai vai trò thì tự chuyển về màn hình của mình.
-    Auth.requireRole(["cashier", "manager"]);
-    const user = Auth.getUser();
-    if (user) document.getElementById("welcome").textContent = `Xin chào ${user.full_name} (${Auth.roleLabel(user)})`;
-  </script>
+  <script>Auth.requireRole(["cashier"]);</script> <!-- thu ngân (và admin) được vào; vai trò khác tự về màn hình của mình -->
+  <script src="../../js/pages/payment.js"></script>
 </body>
 </html>

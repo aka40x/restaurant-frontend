@@ -13,7 +13,10 @@ if (Auth.isLoggedIn()) Auth.goHome();
 
 // Lý do bị đưa về đây (do Auth.goLogin / Auth.logout gắn vào địa chỉ)
 const reason = new URLSearchParams(window.location.search).get("reason");
-if (reason === "expired") showError("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.");
+if (reason === "password-changed")
+  showError("Đã đổi mật khẩu. Vui lòng đăng nhập lại bằng mật khẩu mới.");
+if (reason === "expired")
+  showError("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.");
 if (reason === "required") showError("Bạn cần đăng nhập để vào trang đó.");
 
 function showError(message) {

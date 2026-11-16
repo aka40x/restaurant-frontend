@@ -3,12 +3,13 @@
 //
 // Mỗi trang cần có:  <body data-root="./">   (trang ở thư mục gốc)
 //              hoặc  <body data-root="../">  (trang trong pages/)
-//              hoặc  <body data-root="../../"> (trang trong pages/admin/, pages/staff/ hoặc pages/customer/)
+//              hoặc  <body data-root="../../"> (trang trong pages/admin/, pages/staff/, pages/customer/, pages/account/)
 // và hai thẻ rỗng:   <header id="app-header"></header> ... <footer id="app-footer"></footer>
 // (cần nạp js/auth.js trước file này để hiện tên người đăng nhập và nút Đăng xuất)
+//
+// Trang nội bộ muốn có SIDEBAR theo vai trò: thêm  data-layout="admin"  vào <body>.
 
-// Thêm trang mới vào menu: thêm 1 dòng vào mảng này (đường dẫn tính từ thư mục frontend/)
-// roles: chỉ hiện mục này cho các vai trò liệt kê (không ghi roles = ai cũng thấy). admin thấy tất cả mục.
+// Menu ngang trên header (trang công khai). roles: chỉ hiện cho vai trò liệt kê; không ghi = ai cũng thấy. admin thấy tất cả.
 const MENU = [
   { href: "index.html", label: "Trang chủ" },
   { href: "pages/admin/branches.html", label: "Chi nhánh", roles: ["admin"] },
@@ -16,28 +17,49 @@ const MENU = [
   { href: "pages/admin/kitchen.html", label: "Bếp" },
 ];
 
+// Sidebar trang nội bộ. Thêm trang mới: thêm 1 dòng (roles = vai trò được thấy; admin luôn thấy).
+const SIDEBAR = [
+  { href: "pages/admin/index.html", label: "Tổng quan", roles: ["manager"] },
+  { href: "pages/admin/branches.html", label: "Chi nhánh", roles: [] },            // chỉ admin
+  { href: "pages/admin/users.html", label: "Nhân viên", roles: ["manager"] },
+  { href: "pages/admin/menu.html", label: "Menu", roles: ["manager"] },
+  { href: "pages/admin/reservations.html", label: "Đặt bàn", roles: ["manager", "waiter"] },
+  { href: "pages/staff/tables.html", label: "Sơ đồ bàn", roles: ["manager", "waiter"] },
+  { href: "pages/staff/kitchen.html", label: "Màn hình bếp", roles: ["manager", "kitchen"] },
+  { href: "pages/staff/payment.html", label: "Thanh toán", roles: ["manager", "cashier"] },
+  { href: "pages/account/password.html", label: "Đổi mật khẩu", roles: ["manager", "waiter", "kitchen", "cashier"] },
+];
+
+// Chặn chèn HTML lạ khi đưa tên người dùng vào innerHTML
+function escapeHtml(text) {
+  return String(text ?? "").replace(/[&<>"']/g, (ch) => (
+    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]
+  ));
+}
+
+const canSee = (item, role) => !item.roles || role === "admin" || item.roles.includes(role);
+
 function renderLayout() {
   const root = document.body.dataset.root || "./";
   const currentPath = window.location.pathname;
-  const user = Auth.getUser();
-
+  const user = typeof Auth !== "undefined" ? Auth.getUser() : null;
   const role = user?.role?.name;
-  const visibleMenu = MENU.filter((item) => !item.roles || role === "admin" || item.roles.includes(role));
+  const useSidebar = document.body.dataset.layout === "admin" && !!user;
 
-  const links = visibleMenu.map((item) => {
-    const isActive = currentPath.endsWith("/" + item.href) ||
-      (item.href === "index.html" && currentPath.endsWith("/"));
-    return `<a href="${root}${item.href}" class="${isActive ? "active" : ""}">${item.label}</a>`;
-  }).join("");
+  const isActive = (item) => currentPath.endsWith("/" + item.href) ||
+    (item.href === "index.html" && currentPath.endsWith("/"));
+  const linkHtml = (item) =>
+    `<a href="${root}${item.href}" class="${isActive(item) ? "active" : ""}">${escapeHtml(item.label)}</a>`;
 
-  // Bên phải header: đã đăng nhập thì hiện tên + vai trò + Đăng xuất, chưa thì hiện nút Đăng nhập
+  const links = MENU.filter((item) => canSee(item, role)).map(linkHtml).join("");
+
   const userBox = user
-    ? `<div class="user-box">
-         <a href="${root}${Auth.homePath(user)}" class="user-name">${escapeHtml(user.full_name)}</a>
-         <span class="badge badge-info">${escapeHtml(Auth.roleLabel(user))}</span>
-         <button id="btn-logout" class="btn btn-small" type="button">Đăng xuất</button>
-       </div>`
-    : `<a href="${root}pages/login.html" class="btn btn-small btn-primary">Đăng nhập</a>`;
+  ? `<div class="user-box">
+       <a href="${root}${Auth.homePath()}" class="btn-login">Vào trang làm việc</a>
+       <span>${escapeHtml(user.full_name)} · ${escapeHtml(Auth.roleLabel(user))}</span>
+       <button type="button" id="btn-logout" class="btn-logout">Đăng xuất</button>
+     </div>`
+  : `<div class="user-box"><a href="${root}pages/login.html" class="btn-login">Đăng nhập</a></div>`;
 
   document.getElementById("app-header").innerHTML = `
     <div class="container header-inner">
@@ -45,15 +67,30 @@ function renderLayout() {
         <img src="${root}assets/images/logo.svg" alt="logo" width="28" height="28">
         <span>${CONFIG.APP_NAME}</span>
       </a>
-      <nav class="nav">${links}</nav>
+      ${useSidebar ? "" : `<nav class="nav">${links}</nav>`}
       ${userBox}
     </div>`;
 
   document.getElementById("app-footer").innerHTML = `
     <div class="container">© ${new Date().getFullYear()} Nhóm 6 · Hệ thống quản lý nhà hàng · HN-KS25-CNTT1</div>`;
 
-  const logoutButton = document.getElementById("btn-logout");
-  if (logoutButton) logoutButton.addEventListener("click", () => Auth.logout());
+  document.getElementById("btn-logout")?.addEventListener("click", () => Auth.logout());
+
+  if (useSidebar) renderSidebar(role, linkHtml);
+}
+
+// Bọc <main> của trang vào khung có sidebar bên trái (không cần sửa HTML từng trang)
+function renderSidebar(role, linkHtml) {
+  const main = document.querySelector("main");
+  if (!main) return;
+  const shell = document.createElement("div");
+  shell.className = "admin-shell";
+  const aside = document.createElement("aside");
+  aside.className = "sidebar";
+  aside.innerHTML = `<nav aria-label="Menu quản lý">${SIDEBAR.filter((i) => canSee(i, role)).map(linkHtml).join("")}</nav>`;
+  main.parentNode.insertBefore(shell, main);
+  shell.append(aside, main);
+  document.body.classList.add("has-sidebar");
 }
 
 renderLayout();

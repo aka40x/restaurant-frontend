@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nhân viên | Quản lý nhà hàng</title>
+  <link rel="icon" href="../../assets/images/logo.svg">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body data-root="../../" data-layout="admin">
+  <header id="app-header"></header>
+
+  <main class="container layout-2col">
+    <!-- Form thêm / sửa -->
+    <section class="card">
+      <h2 id="form-title">Thêm nhân viên</h2>
+      <form id="user-form" autocomplete="off">
+        <label for="full_name">Họ tên *</label>
+        <input id="full_name" name="full_name" type="text" required maxlength="100">
+
+        <label for="email">Email *</label>
+        <input id="email" name="email" type="email" required maxlength="150">
+
+        <label for="phone">Số điện thoại</label>
+        <input id="phone" name="phone" type="tel" maxlength="20" placeholder="Không bắt buộc">
+
+        <label for="password" id="password-label">Mật khẩu *</label>
+        <input id="password" name="password" type="password" minlength="8" maxlength="72" autocomplete="new-password">
+        <p class="form-hint" id="password-hint">Tối thiểu 8 ký tự.</p>
+
+        <label for="role_id">Vai trò *</label>
+        <select id="role_id" name="role_id" required></select>
+
+        <div id="branch-field">
+          <label for="branch_id">Chi nhánh *</label>
+          <select id="branch_id" name="branch_id"></select>
+        </div>
+
+        <div class="checkbox-row" id="active-row" hidden>
+          <input id="is_active" name="is_active" type="checkbox" checked>
+          <label for="is_active">Đang làm việc</label>
+        </div>
+
+        <div class="form-actions">
+          <button id="btn-submit" type="submit" class="btn btn-primary">Thêm</button>
+          <button id="btn-cancel" type="button" class="btn" hidden>Huỷ</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Danh sách -->
+    <section class="card">
+      <h2>Danh sách nhân viên</h2>
+      <div class="filter-row">
+        <input id="filter-q" type="search" placeholder="Tìm tên, email, sđt...">
+        <select id="filter-role"><option value="">Mọi vai trò</option></select>
+        <select id="filter-branch" hidden><option value="">Mọi chi nhánh</option></select>
+        <select id="filter-active">
+          <option value="">Mọi trạng thái</option>
+          <option value="true">Đang làm việc</option>
+          <option value="false">Đã khoá</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Nhân viên</th><th>Vai trò</th><th>Chi nhánh</th><th>Trạng thái</th><th></th></tr>
+          </thead>
+          <tbody id="user-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer id="app-footer"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.7.9/dist/axios.min.js"></script>
+  <script src="../../js/config.js"></script>
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/api.js"></script>
+  <script src="../../js/utils.js"></script>
+  <script src="../../js/layout.js"></script>
+  <script>Auth.requireRole(["manager"]);</script>
+  <script src="../../js/pages/users.js"></script>
+</body>
+</html>
