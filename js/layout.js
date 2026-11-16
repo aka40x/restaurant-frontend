@@ -20,6 +20,7 @@ const SIDEBAR = [
   { href: "pages/admin/branches.html", label: "Chi nhánh", roles: [] },            // chỉ admin
   { href: "pages/admin/users.html", label: "Nhân viên", roles: ["manager"] },
   { href: "pages/admin/menu.html", label: "Menu", roles: ["manager"] },
+  { href: "pages/admin/tables.html", label: "Quản lý bàn", roles: ["manager"] },
   { href: "pages/admin/reservations.html", label: "Đặt bàn", roles: ["manager", "waiter"] },
   { href: "pages/staff/tables.html", label: "Sơ đồ bàn", roles: ["manager", "waiter"] },
   { href: "pages/staff/kitchen.html", label: "Màn hình bếp", roles: ["manager", "kitchen"] },
