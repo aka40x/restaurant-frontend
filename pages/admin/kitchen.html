@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Màn hình bếp | Nhà hàng Fine Dining & Bistro</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="icon" href="../../assets/images/logo.svg">
+  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="stylesheet" href="../../css/kitchen.css">
+</head>
+<body data-root="../../">
+  <header id="app-header"></header>
+
+  <main class="container kd-wide">
+    <!-- ============ Đăng nhập (hiện khi chưa có token) ============ -->
+    <section id="loginBox" class="kd-login" hidden>
+      <div class="kd-panel">
+        <span class="kd-tag">DÀNH CHO NHÂN VIÊN</span>
+        <h1 class="kd-title">Đăng nhập màn hình bếp</h1>
+        <p class="kd-muted">Đăng nhập bằng tài khoản bếp để nhận và xử lý món.</p>
+        <div id="loginError" class="kd-alert" hidden></div>
+        <form id="loginForm">
+          <div class="kd-field">
+            <label class="kd-label" for="loginEmail">Email *</label>
+            <input id="loginEmail" class="kd-input" type="email" required autocomplete="username" placeholder="kitchen@restaurant.com">
+          </div>
+          <div class="kd-field">
+            <label class="kd-label" for="loginPassword">Mật khẩu *</label>
+            <input id="loginPassword" class="kd-input" type="password" required autocomplete="current-password">
+          </div>
+          <button id="loginSubmit" type="submit" class="kd-btn kd-btn-dark kd-btn-block">Đăng nhập</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ============ Bảng bếp ============ -->
+    <div id="kdApp" hidden>
+      <div class="kd-head">
+        <div>
+          <span class="kd-tag">BẾP · HÀNG ĐỢI MÓN</span>
+          <h1 class="kd-title">Màn hình bếp</h1>
+        </div>
+        <div class="kd-tools">
+          <span id="kdStatus" class="kd-status" role="status"></span>
+          <button id="btnSound" class="kd-btn kd-btn-sm" type="button" aria-pressed="false">Âm báo: Tắt</button>
+          <div class="kd-user">
+            <strong id="userName"></strong>
+            <span id="userRole"></span>
+          </div>
+          <button id="btnLogout" class="kd-btn kd-btn-sm" type="button">Đăng xuất</button>
+        </div>
+      </div>
+
+      <div id="kdReadonly" class="kd-note-bar" hidden>
+        Bạn đang ở chế độ xem. Chỉ tài khoản bếp, quản lý hoặc admin mới đổi được trạng thái món.
+      </div>
+
+      <div class="kd-board">
+        <section class="kd-col kd-col-pending" aria-labelledby="h-pending">
+          <header class="kd-col-head">
+            <div>
+              <h2 id="h-pending" class="kd-col-title">Chờ nấu</h2>
+              <div class="kd-col-sub">Món mới gửi từ phục vụ</div>
+            </div>
+            <span id="cnt-pending" class="kd-count">0</span>
+          </header>
+          <div id="col-pending" class="kd-col-body"></div>
+        </section>
+
+        <section class="kd-col kd-col-cooking" aria-labelledby="h-cooking">
+          <header class="kd-col-head">
+            <div>
+              <h2 id="h-cooking" class="kd-col-title">Đang nấu</h2>
+              <div class="kd-col-sub">Bấm thẻ khi nấu xong</div>
+            </div>
+            <span id="cnt-cooking" class="kd-count">0</span>
+          </header>
+          <div id="col-cooking" class="kd-col-body"></div>
+        </section>
+
+        <section class="kd-col kd-col-done" aria-labelledby="h-done">
+          <header class="kd-col-head">
+            <div>
+              <h2 id="h-done" class="kd-col-title">Xong</h2>
+              <div class="kd-col-sub">Chờ phục vụ mang ra</div>
+            </div>
+            <span id="cnt-done" class="kd-count">0</span>
+          </header>
+          <div id="col-done" class="kd-col-body"></div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer id="app-footer"></footer>
+
+  <!-- Thứ tự quan trọng: axios -> config -> api -> utils -> (file auth của nhóm nếu trang gọi món cũng nạp) -> layout -> script riêng của trang -->
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.7.9/dist/axios.min.js"></script>
+  <script src="../../js/config.js"></script>
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/api.js"></script>
+  <script src="../../js/utils.js"></script>
+  <script src="../../js/layout.js"></script>
+  <script src="../../js/pages/kitchen.js"></script>
+</body>
+</html>
