@@ -131,11 +131,11 @@ function renderItems() {
   } else {
     itemBody.innerHTML = rows.map((m) => `
       <tr class="${m.is_active ? "" : "row-inactive"}">
-        <td><img class="menu-thumb" src="${m.image_url ? attr(imgSrc(m.image_url)) : noImage}" alt="" onerror="this.onerror=null;this.src='${noImage}'"></td>
+        <td><img class="menu-thumb" src="${m.image_url ? attr(imgSrc(m.image_url)) : noImage}" alt=""></td>
         <td>
           <strong>${escapeHtml(m.name)}</strong>
           <div class="muted">${escapeHtml(categoryName(m.category_id))}</div>
-          <div style="margin-top:4px;">
+          <div class="badge-row">
             ${m.is_available
               ? '<span class="badge badge-success">Còn món</span>'
               : '<span class="badge badge-warning">Hết món</span>'}
@@ -249,7 +249,7 @@ async function toggleAvailable(id) {
   const m = allItems.find((x) => x.id === id);
   try {
     // api.js chưa có hàm patch nên gọi thẳng axios instance "http"
-    await http.patch(`/menu-items/${id}/availability`, { is_available: !m.is_available });
+    await request("PATCH", `/menu-items/${id}/availability`, { is_available: !m.is_available });
     showToast(m.is_available ? "Đã đặt hết món" : "Đã đặt còn món");
     await refreshKeepPage();
   } catch (error) {
@@ -278,6 +278,13 @@ async function activateItem(id) {
     handleError(error);
   }
 }
+
+// Ảnh lỗi (link hỏng / file không có) thì thay bằng ảnh mặc định.
+// Sự kiện "error" của <img> không nổi bọt nên phải đăng ký ở pha capture (tham số true).
+itemBody.addEventListener("error", (event) => {
+  const img = event.target;
+  if (img.tagName === "IMG" && img.src !== noImage) img.src = noImage;
+}, true);
 
 itemBody.addEventListener("click", (event) => {
   const button = event.target.closest("button[data-action]");
