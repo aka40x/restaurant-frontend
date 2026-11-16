@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý bàn | Quản lý nhà hàng</title>
+    <link rel="icon" href="../../assets/images/logo.svg" />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/tables.css" />
+  </head>
+  <body data-root="../../" data-layout="admin">
+    <header id="app-header"></header>
+
+    <main class="container layout-2col">
+      <!-- Cột trái: form thêm / sửa bàn -->
+      <section class="card">
+        <h2 id="form-title">Thêm bàn</h2>
+        <form id="table-form">
+          <label for="branch_id">Chi nhánh *</label>
+          <select id="branch_id" name="branch_id" required></select>
+
+          <label for="table_number">Số bàn *</label>
+          <input id="table_number" name="table_number" type="text" required maxlength="20" placeholder="VD: A01" />
+
+          <label for="capacity">Số ghế *</label>
+          <input id="capacity" name="capacity" type="number" required min="1" step="1" placeholder="VD: 4" />
+
+          <label for="area">Khu vực</label>
+          <input id="area" name="area" type="text" maxlength="50" list="area-list" placeholder="VD: Tầng 1, Sân vườn" />
+          <datalist id="area-list"></datalist>
+
+          <div class="checkbox-row">
+            <input id="is_active" name="is_active" type="checkbox" checked />
+            <label for="is_active">Đang sử dụng (bỏ chọn = ngừng sử dụng)</label>
+          </div>
+
+          <div class="form-actions">
+            <button id="btn-submit" type="submit" class="btn btn-primary">Thêm</button>
+            <button id="btn-cancel" type="button" class="btn" hidden>Huỷ</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Cột phải: danh sách bàn -->
+      <section class="card">
+        <div class="list-header">
+          <h2>Danh sách bàn</h2>
+        </div>
+        <div class="toolbar">
+          <input id="search-input" type="search" placeholder="Tìm theo số bàn..." />
+          <select id="filter-branch"></select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Bàn</th>
+                <th>Chi nhánh</th>
+                <th>Khu vực</th>
+                <th>Số ghế</th>
+                <th>Trạng thái</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+        <div id="pager" class="pager"></div>
+      </section>
+    </main>
+
+    <footer id="app-footer"></footer>
+
+    <script src="../../js/config.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/api.js"></script>
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/layout.js"></script>
+    <script src="../../js/pages/tables.js"></script>
+  </body>
+</html>
