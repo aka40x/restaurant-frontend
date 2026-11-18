@@ -15,7 +15,7 @@
 
 // Trang gọi món của module Order (cùng thư mục pages/staff/). Nhận ?order_id=...
 // Nếu bạn Order đặt tên trang khác thì chỉ cần sửa dòng này.
-const ORDER_PAGE = "order.html";
+const ORDER_PAGE = "../admin/pos.html";;
 function orderUrl(orderId, tableId) {
   return `${ORDER_PAGE}?order_id=${orderId}&table_id=${tableId}`;
 }
@@ -241,13 +241,19 @@ async function openOrder(t, reservationId) {
   const button = document.getElementById("btn-open-order");
   button.disabled = true;
   try {
-    const body = { table_id: t.id };
-    if (reservationId) body.reservation_id = reservationId;
-    const order = await api.post("/orders", body);
-    window.location.href = orderUrl(order.id, t.id);
+    let orderId;
+    if (reservationId) {
+      // Khách đặt trước đã đến: check-in (đặt bàn -> seated, bàn -> occupied, tự mở order)
+      const result = await api.put(`/reservations/${reservationId}/check-in`);
+      orderId = result.order_id;
+    } else {
+      const order = await api.post("/orders", { table_id: t.id });
+      orderId = order.id;
+    }
+    window.location.href = orderUrl(orderId, t.id);
   } catch (error) {
     button.disabled = false;
-    handleError(error); // VD: 409 bàn đang có order chưa thanh toán
+    handleError(error);
     if (error.status === 409) {
       dialog.close();
       refresh();
