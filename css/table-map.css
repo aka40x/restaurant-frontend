@@ -1,0 +1,46 @@
+/* Style riêng cho Sơ đồ bàn (pages/staff/tables.html). Dùng kèm css/style.css. */
+.map-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.map-head h1 { margin: 0 0 4px; }
+.map-tools { display: flex; gap: 8px; align-items: center; }
+.map-tools select { width: auto; min-width: 200px; }
+
+.legend { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; margin: 16px 0 8px; font-size: 14px; }
+.legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.legend-note { margin-left: auto; font-size: 13px; }
+.dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; }
+.dot-available { background: var(--color-success); }
+.dot-reserved { background: var(--color-warning); }
+.dot-occupied { background: var(--color-danger); }
+
+.area { margin-top: 20px; }
+.area h2 { font-size: 18px; margin: 0 0 10px; }
+.table-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
+
+.table-card {
+  display: flex; flex-direction: column; gap: 4px; align-items: flex-start;
+  padding: 12px 14px; border-radius: 12px; border: 2px solid transparent;
+  background: #fff; cursor: pointer; font: inherit; text-align: left; color: var(--color-text);
+}
+.table-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, .12); }
+.table-card:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
+.table-card .t-number { font-size: 20px; font-weight: 700; }
+.table-card .t-seats { font-size: 13px; opacity: .85; }
+.table-card .t-state { font-size: 12px; font-weight: 600; }
+.table-card.is-available { background: #e4f1e7; border-color: var(--color-success); }
+.table-card.is-reserved { background: #fdf1d6; border-color: var(--color-warning); }
+.table-card.is-occupied { background: #f8dcd8; border-color: var(--color-danger); }
+
+dialog { border: 1px solid var(--color-border); border-radius: var(--radius); padding: 20px; width: min(520px, 92vw); }
+dialog::backdrop { background: rgba(0, 0, 0, .4); }
+.dialog-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; }
+.dialog-head h2 { margin: 0; }
+.info-list { margin: 8px 0; padding: 0; list-style: none; font-size: 14px; }
+.info-list li { padding: 3px 0; }
+.order-lines { width: 100%; border-collapse: collapse; font-size: 14px; margin: 8px 0; }
+.order-lines td { padding: 5px 4px; border-bottom: 1px solid var(--color-border); vertical-align: top; }
+.order-lines .num { text-align: right; white-space: nowrap; }
+.order-lines tr.cancelled td { text-decoration: line-through; opacity: .5; }
+.order-total { display: flex; justify-content: space-between; font-weight: 700; margin-top: 8px; }
+#dialog-actions { margin-top: 16px; }
+#dialog-actions a.btn { text-decoration: none; display: inline-block; }
+.table-card .t-note { font-size: 11px; opacity: .8; }

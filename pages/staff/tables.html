@@ -3,34 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TIÊU_ĐỀ | Quản lý nhà hàng</title>
+  <title>Sơ đồ bàn | Quản lý nhà hàng</title>
   <link rel="icon" href="../../assets/images/logo.svg">
   <link rel="stylesheet" href="../../css/style.css">
+  <link rel="stylesheet" href="../../css/table-map.css">
 </head>
-<body data-root="../../">
+<body data-root="../../" data-layout="admin">
   <header id="app-header"></header>
 
   <main class="container">
     <section class="card">
-      <h1>Sơ đồ bàn</h1>
-      <p id="welcome" class="muted"></p>
-      <p>Màn hình này đang được xây dựng.</p>
+      <div class="map-head">
+        <div>
+          <h1>Sơ đồ bàn</h1>
+          <p id="branch-label" class="muted"></p>
+        </div>
+        <div class="map-tools">
+          <select id="branch-select" hidden aria-label="Chọn chi nhánh"></select>
+          <button id="btn-refresh" type="button" class="btn btn-small">Làm mới</button>
+        </div>
+      </div>
+
+      <!-- Chú thích màu + số lượng bàn theo trạng thái -->
+      <div class="legend">
+        <span class="legend-item"><i class="dot dot-available"></i>Trống <b id="count-available">0</b></span>
+        <span class="legend-item"><i class="dot dot-reserved"></i>Đặt trước <b id="count-reserved">0</b></span>
+        <span class="legend-item"><i class="dot dot-occupied"></i>Đang phục vụ <b id="count-occupied">0</b></span>
+        <span class="muted legend-note">Tự cập nhật mỗi 15 giây</span>
+      </div>
+
+      <div id="map"><p class="muted">Đang tải...</p></div>
     </section>
   </main>
 
+  <!-- Hộp thoại chi tiết bàn: hiện khi bấm vào 1 bàn -->
+  <dialog id="table-dialog">
+    <div class="dialog-head">
+      <h2 id="dialog-title"></h2>
+      <button id="dialog-close" type="button" class="btn btn-small">Đóng</button>
+    </div>
+    <div id="dialog-body"></div>
+    <div id="dialog-actions" class="form-actions"></div>
+  </dialog>
+
   <footer id="app-footer"></footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/axios@1.7.9/dist/axios.min.js"></script>
   <script src="../../js/config.js"></script>
   <script src="../../js/auth.js"></script>
   <script src="../../js/api.js"></script>
   <script src="../../js/utils.js"></script>
   <script src="../../js/layout.js"></script>
-  <script>
-    // Chỉ các vai trò này được vào (admin luôn được). Sai vai trò thì tự chuyển về màn hình của mình.
-    Auth.requireRole(["waiter", "manager"]);
-    const user = Auth.getUser();
-    if (user) document.getElementById("welcome").textContent = `Xin chào ${user.full_name} (${Auth.roleLabel(user)})`;
-  </script>
+  <script src="../../js/pages/table-map.js"></script>
 </body>
 </html>
