@@ -40,13 +40,6 @@ const state = {
   busy: false,
 };
 
-// Gắn token vào mọi request (nếu js/api.js đã làm thì đây chỉ ghi đè cùng giá trị, không sao)
-http.interceptors.request.use((config) => {
-  const token = localStorage.getItem(TOKEN_KEY);
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
-
 const $ = (id) => document.getElementById(id);
 // escapeHtml (utils.js) không escape dấu nháy, nên dùng bản này khi chèn vào thuộc tính HTML
 const escAttr = (v) => escapeHtml(v).replace(/"/g, "&quot;").replace(/'/g, "&#39;");
