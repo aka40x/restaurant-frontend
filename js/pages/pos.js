@@ -38,23 +38,51 @@ const state = {
   dishQty: 1,
   poll: null,
   busy: false,
+  dirty: false, // có sự kiện realtime tới lúc đang thao tác: tải lại order khi thao tác xong
+  pollTick: 0,
 };
 
-// Gắn token vào mọi request (nếu js/api.js đã làm thì đây chỉ ghi đè cùng giá trị, không sao)
-http.interceptors.request.use((config) => {
-  const token = localStorage.getItem(TOKEN_KEY);
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
+// ---------- Phiên đăng nhập ----------
+// Dùng chung với Auth của nhóm (js/auth.js) nếu trang có nạp; không thì dùng khoá "token" riêng của trang.
+const hasAuth = typeof Auth !== "undefined";
+function getToken() {
+  return (hasAuth && Auth.getAccessToken()) || localStorage.getItem(TOKEN_KEY);
+}
+function saveSession(tokens) {
+  localStorage.setItem(TOKEN_KEY, tokens.access_token);
+  if (hasAuth) Auth.setTokens(tokens);
+}
+function clearSession() {
+  localStorage.removeItem(TOKEN_KEY);
+  if (hasAuth) Auth.clear();
+}
+
+// api.js cũ (axios) không tự gắn token nên gắn ở đây. api.js mới (fetch) đã tự gắn, và không có biến `http`.
+if (typeof http !== "undefined") {
+  http.interceptors.request.use((config) => {
+    const token = getToken();
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+  });
+}
 
 const $ = (id) => document.getElementById(id);
 // escapeHtml (utils.js) không escape dấu nháy, nên dùng bản này khi chèn vào thuộc tính HTML
 const escAttr = (v) => escapeHtml(v).replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-
+// Phòng khi trang không nạp js/utils.js: tự có hàm thông báo tối thiểu
+if (typeof showToast === "undefined") {
+  window.showToast = (message, type = "success") => {
+    const el = document.createElement("div");
+    el.className = "toast toast-" + type;
+    el.textContent = message;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  };
+}
 // ---------- Khởi động / đăng nhập ----------
 function tokenPayload() {
   try {
-    const part = (localStorage.getItem(TOKEN_KEY) || "").split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    const part = (getToken() || "").split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
     return JSON.parse(atob(part));
   } catch (error) {
     return {};
@@ -74,16 +102,30 @@ async function loadUser(emailHint) {
 
 async function init() {
   bindEvents();
-  if (localStorage.getItem(TOKEN_KEY)) {
-    try {
-      state.user = await loadUser();
-      await startApp();
-      return;
-    } catch (error) {
-      localStorage.removeItem(TOKEN_KEY); // token hết hạn / sai
+  if (!getToken()) return showLogin();
+  try {
+    // Dùng thông tin đã lưu lúc đăng nhập, khỏi gọi /auth/me mỗi lần vào trang
+    const saved = hasAuth ? Auth.getUser() : null;
+    state.user = saved && saved.role && saved.role.name ? saved : await loadUser();
+    await startApp();
+  } catch (error) {
+    if (error.status === 401) {
+      clearSession(); // chỉ khi token thật sự hết hạn (làm mới token cũng thất bại)
+      showLogin("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.");
+    } else {
+      showFatal(error.message || String(error)); // lỗi khác (mất mạng, backend lỗi...): GIỮ phiên, chỉ báo lỗi
     }
   }
-  showLogin();
+}
+function showFatal(message) {
+  $("loginBox").hidden = true;
+  $("posApp").hidden = false;
+  showTablesError(message);
+}
+
+function showTablesError(message) {
+  $("tableGrid").innerHTML = `<div class="po-empty">Không tải được danh sách bàn: ${escapeHtml(message)}<br><br><button type="button" class="po-btn po-btn-sm" id="btnRetry">Thử lại</button></div>`;
+  $("btnRetry").addEventListener("click", () => location.reload());
 }
 
 function showLogin(message) {
@@ -101,11 +143,13 @@ async function startApp() {
   const roleName = ROLE_LABEL[state.user.role.name] || state.user.role.name;
   $("userRole").textContent = roleName + (state.user.branch ? " · " + state.user.branch.name : "");
   await loadData();
+  startRealtime();
 }
 
 function logout(message) {
   stopPoll();
-  localStorage.removeItem(TOKEN_KEY);
+  Realtime.close();
+  clearSession();
   Object.assign(state, { user: null, table: null, order: null, tables: [], categories: [] });
   closeDish();
   showLogin(message);
@@ -133,6 +177,7 @@ async function loadData() {
     renderSheet();
   } catch (error) {
     handleError(error);
+    if (error.status !== 401) showTablesError(error.message);
   }
 }
 
@@ -449,6 +494,10 @@ async function runAction(fn) {
     await reloadOrder();
   } finally {
     state.busy = false;
+    if (state.dirty) {
+      state.dirty = false;
+      reloadOrder();
+    }
   }
 }
 
@@ -505,6 +554,8 @@ function stopPoll() {
 
 async function pollOrder() {
   if (!state.order || state.busy || document.hidden || state.dish) return;
+  // Realtime đang nối thì sự kiện tự tới: chỉ tải lại mỗi 30 giây phòng khi lỡ. Mất kết nối thì 5 giây một lần như cũ.
+  if (Realtime.isOpen() && ++state.pollTick % 6 !== 0) return;
   try {
     const fresh = await api.get(`/orders/${state.order.id}`);
     if (state.busy) return; // người dùng vừa thao tác trong lúc chờ: bỏ kết quả cũ
@@ -523,7 +574,74 @@ async function pollOrder() {
   }
 }
 
-// ---------- Gắn sự kiện ----------
+// ---------- Thông báo realtime (WebSocket) ----------
+// Backend gửi: {type:"item.status", order_id, table_number, menu_item_name, quantity, status} khi bếp đổi trạng thái món.
+function startRealtime() {
+  Realtime.connect({
+    onStatus: showLive,
+    onOpen: (isReconnect) => {
+      // Vừa nối lại sau khi mất kết nối: có thể đã lỡ sự kiện nên tải lại cho đúng
+      if (!isReconnect) return;
+      if (state.table) reloadOrder();
+      else refreshTables();
+    },
+    onEvent: onRealtimeEvent,
+  });
+}
+
+function showLive(name, info) {
+  const el = $("rtStatus");
+  el.className = "po-rt " + name;
+  el.textContent = {
+    connecting: "Đang kết nối...",
+    open: "Trực tiếp",
+    reconnecting: `Mất kết nối, thử lại lần ${info.attempt}...`,
+    auth_failed: "Hết phiên",
+    closed: "",
+  }[name] || "";
+}
+
+function onRealtimeEvent(msg) {
+  if (msg.type === "order.changed") {
+    // Order đổi bàn / gộp / tách: đang ở màn hình chọn bàn thì tải lại bàn; đang mở đúng order đó thì tải lại order
+    if (!state.table) refreshTables();
+    else if (state.order && (state.order.id === msg.order_id || state.order.id === msg.other_order_id)) reloadOrder();
+    return;
+  }
+  if (msg.type !== "item.status") return;
+  // Món nấu xong: báo cho phục vụ biết để mang ra (mọi phục vụ cùng chi nhánh đều thấy)
+  if (msg.status === "done") {
+    notify(`Món đã xong · Bàn ${msg.table_number}`, `${msg.menu_item_name} × ${msg.quantity}: mang ra cho khách`);
+  }
+  // Đang mở đúng order đó thì cập nhật trạng thái món ngay. Đang bận thao tác thì tải lại khi xong.
+  if (state.order && state.order.id === msg.order_id) {
+    if (state.busy) state.dirty = true;
+    else reloadOrder();
+  }
+}
+
+// Thông báo nổi ở góc dưới phải, bấm để tắt, tự tắt sau 20 giây
+function notify(title, detail) {
+  let box = $("notices");
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "notices";
+    box.className = "po-notices";
+    document.body.appendChild(box);
+  }
+  const el = document.createElement("button");
+  el.type = "button";
+  el.className = "po-notice";
+  const head = document.createElement("strong");
+  head.textContent = title; // textContent: tên món do người dùng nhập, không chèn HTML
+  const body = document.createElement("span");
+  body.textContent = detail;
+  el.append(head, body);
+  el.addEventListener("click", () => el.remove());
+  box.appendChild(el);
+  while (box.children.length > 5) box.firstChild.remove();
+  setTimeout(() => el.remove(), 20000);
+}
 function bindEvents() {
   $("loginForm").addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -534,12 +652,13 @@ function bindEvents() {
         email: $("loginEmail").value.trim(),
         password: $("loginPassword").value,
       });
-      localStorage.setItem(TOKEN_KEY, tokens.access_token);
+      saveSession(tokens);
       state.user = await loadUser($("loginEmail").value.trim());
+      if (hasAuth) Auth.saveUser(state.user); // để thanh menu chung biết ai đang đăng nhập
       $("loginPassword").value = "";
       await startApp();
     } catch (error) {
-      localStorage.removeItem(TOKEN_KEY);
+      clearSession();
       showLogin(error.message);
     } finally {
       button.disabled = false;
