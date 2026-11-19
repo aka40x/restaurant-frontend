@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,12 +8,15 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
 
   <link rel="icon" href="../../assets/images/logo.svg">
   <link rel="stylesheet" href="../../css/style.css">
   <link rel="stylesheet" href="../../css/kitchen.css">
 </head>
+
 <body data-root="../../">
   <header id="app-header"></header>
 
@@ -27,7 +31,8 @@
         <form id="loginForm">
           <div class="kd-field">
             <label class="kd-label" for="loginEmail">Email *</label>
-            <input id="loginEmail" class="kd-input" type="email" required autocomplete="username" placeholder="kitchen@restaurant.com">
+            <input id="loginEmail" class="kd-input" type="email" required autocomplete="username"
+              placeholder="kitchen@restaurant.com">
           </div>
           <div class="kd-field">
             <label class="kd-label" for="loginPassword">Mật khẩu *</label>
@@ -46,6 +51,7 @@
           <h1 class="kd-title">Màn hình bếp</h1>
         </div>
         <div class="kd-tools">
+          <span id="kdLive" class="kd-live" role="status"></span>
           <span id="kdStatus" class="kd-status" role="status"></span>
           <button id="btnSound" class="kd-btn kd-btn-sm" type="button" aria-pressed="false">Âm báo: Tắt</button>
           <div class="kd-user">
@@ -106,6 +112,8 @@
   <script src="../../js/api.js"></script>
   <script src="../../js/utils.js"></script>
   <script src="../../js/layout.js"></script>
+  <script src="../../js/realtime.js"></script>
   <script src="../../js/pages/kitchen.js"></script>
 </body>
+
 </html>

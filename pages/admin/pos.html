@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,12 +8,15 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
 
   <link rel="icon" href="../../assets/images/logo.svg">
   <link rel="stylesheet" href="../../css/style.css">
   <link rel="stylesheet" href="../../css/pos.css">
 </head>
+
 <body data-root="../../">
   <header id="app-header"></header>
 
@@ -27,7 +31,8 @@
         <form id="loginForm">
           <div class="po-field">
             <label class="po-label" for="loginEmail">Email *</label>
-            <input id="loginEmail" class="po-input" type="email" required autocomplete="username" placeholder="waiter@restaurant.com">
+            <input id="loginEmail" class="po-input" type="email" required autocomplete="username"
+              placeholder="waiter@restaurant.com">
           </div>
           <div class="po-field">
             <label class="po-label" for="loginPassword">Mật khẩu *</label>
@@ -46,6 +51,7 @@
           <h1 class="po-title">Gọi món</h1>
         </div>
         <div class="po-user">
+          <span id="rtStatus" class="po-rt" role="status"></span>
           <div class="po-user-meta">
             <strong id="userName"></strong>
             <span id="userRole"></span>
@@ -117,6 +123,8 @@
   <script src="../../js/api.js"></script>
   <script src="../../js/utils.js"></script>
   <script src="../../js/layout.js"></script>
+  <script src="../../js/realtime.js"></script>
   <script src="../../js/pages/pos.js"></script>
 </body>
+
 </html>

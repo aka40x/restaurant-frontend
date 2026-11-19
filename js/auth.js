@@ -15,7 +15,7 @@ const Auth = (() => {
     admin: "pages/admin/index.html",
     manager: "pages/admin/index.html",
     waiter: "pages/staff/tables.html",
-    kitchen: "pages/staff/kitchen.html",
+    kitchen: "pages/admin/kitchen.html", 
     cashier: "pages/staff/payment.html",
   };
   const ROLE_LABEL = {
