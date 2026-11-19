@@ -16,6 +16,12 @@
       <p id="welcome" class="muted"></p>
       <div class="shortcut-grid" id="shortcuts"></div>
     </section>
+
+    <!-- Cảnh báo kho: chỉ hiện khi có nguyên liệu dưới mức tối thiểu -->
+    <section class="card" id="alert-card" hidden>
+      <h2>Cảnh báo</h2>
+      <div class="shortcut-grid" id="alerts"></div>
+    </section>
   </main>
 
   <footer id="app-footer"></footer>
@@ -36,6 +42,18 @@
       .filter((item) => canSee(item, role) && !item.href.endsWith("admin/index.html"))
       .map((item) => `<a href="${document.body.dataset.root}${item.href}"><strong>${escapeHtml(item.label)}</strong></a>`)
       .join("");
+    // Cảnh báo kho: số nguyên liệu dưới mức tối thiểu, bấm vào mở trang Kho đã lọc "Chỉ sắp hết".
+    // Admin xem tổng của mọi chi nhánh, manager chỉ chi nhánh mình (backend tự lọc).
+    api.get("/inventory/low-stock").then((rows) => {
+      if (rows.length === 0) return;
+      const scope = role === "admin" ? " (mọi chi nhánh)" : "";
+      document.getElementById("alerts").innerHTML = `
+        <a href="${document.body.dataset.root}pages/admin/inventory.html?low=true">
+          <strong>${rows.length} nguyên liệu sắp hết${scope}</strong>
+          <div class="muted">Bấm để xem trong trang Kho</div>
+        </a>`;
+      document.getElementById("alert-card").hidden = false;
+    }).catch(() => { /* lỗi mạng hoặc không đủ quyền: bỏ qua, không làm hỏng trang Tổng quan */ });
   </script>
 </body>
 </html>

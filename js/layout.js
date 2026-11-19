@@ -27,6 +27,8 @@ const SIDEBAR = [
   { href: "pages/admin/reservations.html", label: "Đặt bàn", roles: ["manager", "waiter"] },
   { href: "pages/staff/tables.html", label: "Sơ đồ bàn", roles: ["manager", "waiter"] },
   { href: "pages/admin/kitchen.html", label: "Màn hình bếp", roles: ["manager", "kitchen"] },
+  { href: "pages/admin/inventory.html", label: "Kho", roles: ["manager"] },
+  { href: "pages/staff/kitchen.html", label: "Màn hình bếp", roles: ["manager", "kitchen"] },
   { href: "pages/staff/payment.html", label: "Thanh toán", roles: ["manager", "cashier"] },
   { href: "pages/account/password.html", label: "Đổi mật khẩu", roles: ["manager", "waiter", "kitchen", "cashier"] },
 ];

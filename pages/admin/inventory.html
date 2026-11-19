@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kho nguyên liệu | Quản lý nhà hàng</title>
+  <link rel="icon" href="../../assets/images/logo.svg">
+  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="stylesheet" href="../../css/inventory.css">
+</head>
+<body data-layout="admin" data-root="../../">
+  <header id="app-header"></header>
+
+  <main class="container">
+    <div class="page-head">
+      <h1>Kho nguyên liệu</h1>
+      <button id="btn-add-ingredient" type="button" class="btn btn-primary">Thêm nguyên liệu</button>
+    </div>
+
+    <section class="card">
+      <div class="filter-row">
+        <!-- Ô chọn chi nhánh chỉ admin thấy (manager chỉ làm việc với chi nhánh của mình) -->
+        <select id="branch-select" aria-label="Chi nhánh" hidden></select>
+        <input id="search-input" type="search" placeholder="Tìm theo tên nguyên liệu..." autocomplete="off">
+        <select id="filter-select" aria-label="Lọc theo tình trạng">
+          <option value="all">Tất cả</option>
+          <option value="low">Chỉ sắp hết</option>
+        </select>
+      </div>
+
+      <p id="summary" class="muted" role="status"></p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Nguyên liệu</th>
+              <th>Đơn vị</th>
+              <th class="text-right">Tồn kho</th>
+              <th class="text-right">Mức tối thiểu</th>
+              <th>Trạng thái</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="inventory-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer id="app-footer"></footer>
+
+  <!-- Nhập kho: cộng thêm vào tồn hiện có -->
+  <dialog id="dlg-receive" class="dialog">
+    <form id="form-receive" novalidate>
+      <h2>Nhập kho</h2>
+      <p id="receive-name"><strong></strong></p>
+      <p id="receive-hint" class="muted"></p>
+      <label for="receive-amount">Số lượng nhập thêm</label>
+      <input id="receive-amount" type="number" step="0.01" min="0" inputmode="decimal" placeholder="VD: 500">
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Nhập kho</button>
+        <button type="button" class="btn" data-close>Huỷ</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Kiểm kê: đặt lại tồn kho và mức tối thiểu -->
+  <dialog id="dlg-edit" class="dialog">
+    <form id="form-edit" novalidate>
+      <h2>Kiểm kê</h2>
+      <p id="edit-name"><strong></strong></p>
+      <label for="edit-quantity">Tồn kho</label>
+      <input id="edit-quantity" type="number" step="0.01" min="0" inputmode="decimal">
+      <label for="edit-min">Mức tối thiểu (cảnh báo khi tồn thấp hơn)</label>
+      <input id="edit-min" type="number" step="0.01" min="0" inputmode="decimal">
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Lưu</button>
+        <button type="button" class="btn" data-close>Huỷ</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Thêm nguyên liệu mới: tạo nguyên liệu rồi đưa vào kho của chi nhánh với tồn 0 -->
+  <dialog id="dlg-ingredient" class="dialog">
+    <form id="form-ingredient" novalidate>
+      <h2>Thêm nguyên liệu</h2>
+      <label for="ingredient-name">Tên nguyên liệu *</label>
+      <input id="ingredient-name" type="text" maxlength="100" placeholder="VD: Hành tây">
+      <label for="ingredient-unit">Đơn vị *</label>
+      <input id="ingredient-unit" type="text" maxlength="20" placeholder="VD: g, ml, cái">
+      <p class="muted">Nguyên liệu mới vào kho với tồn 0, dùng "Nhập kho" để thêm số lượng.</p>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Thêm</button>
+        <button type="button" class="btn" data-close>Huỷ</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.7.9/dist/axios.min.js"></script>
+  <script src="../../js/config.js"></script>
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/api.js"></script>
+  <script src="../../js/utils.js"></script>
+  <script src="../../js/layout.js"></script>
+  <script>Auth.requireRole(["manager"]);</script> <!-- manager và admin được vào; vai trò khác tự về màn hình của mình -->
+  <script src="../../js/pages/inventory.js"></script>
+</body>
+</html>
