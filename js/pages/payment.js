@@ -1,10 +1,10 @@
 // Trang Thu ngân: chọn order cần thanh toán -> xem hoá đơn, áp voucher -> thanh toán -> in hoá đơn.
-//   Danh sách order chưa thanh toán -> GET  /orders?status=open | sent | served
+//   Danh sách order chờ thanh toán  -> GET  /orders?status=served   (chỉ order phục vụ đã đem món ra xong)
 //   Xem hoá đơn tạm / áp voucher    -> GET  /payments/bill/{order_id}?voucher_code=
 //   Thanh toán                      -> POST /payments   { order_id, method, voucher_code }
 // Backend là nơi tính tiền: trang này chỉ hiển thị số tiền server trả về, không tự tính.
 
-const PAYABLE_STATUSES = ["open", "sent", "served"]; // giống PAYABLE_STATUSES ở backend (crud/payment.py)
+const PAYABLE_STATUS = "served"; // chỉ thanh toán khi phục vụ đã đem hết món ra (giống PAYABLE_STATUSES ở backend crud/payment.py)
 const STATUS_LABEL = { open: "Đang gọi món", sent: "Đã gửi bếp", served: "Đã phục vụ" };
 const METHOD_LABEL = { cash: "Tiền mặt", card: "Thẻ", transfer: "Chuyển khoản" };
 
@@ -47,9 +47,7 @@ const statusChip = (status) =>
 async function loadOrders() {
   orderList.innerHTML = `<p class="muted">Đang tải...</p>`;
   try {
-    // API chỉ lọc được một trạng thái mỗi lần nên gọi cả ba rồi gộp lại
-    const groups = await Promise.all(PAYABLE_STATUSES.map((status) => api.get("/orders", { status })));
-    orders = groups.flat().sort((a, b) => a.id - b.id);
+    orders = (await api.get("/orders", { status: PAYABLE_STATUS })).sort((a, b) => a.id - b.id);
     renderOrders();
   } catch (error) {
     orderCount.textContent = "";
@@ -58,9 +56,9 @@ async function loadOrders() {
 }
 
 function renderOrders() {
-  orderCount.textContent = orders.length > 0 ? `${orders.length} order đang chờ thanh toán` : "";
+  orderCount.textContent = orders.length > 0 ? `${orders.length} order chờ thanh toán` : "";
   if (orders.length === 0) {
-    orderList.innerHTML = `<p class="muted">Không có order nào cần thanh toán</p>`;
+    orderList.innerHTML = `<p class="muted">Chưa có order nào được phục vụ xong</p>`;
     return;
   }
   // Order chỉ có table_id (chưa có API bàn trả số bàn như A1) nên hiện "Bàn 1" theo id
@@ -230,7 +228,7 @@ async function showReceipt(payment, bill, tableId) {
     <div class="receipt-meta">
       <div><span>Phương thức</span><span>${escapeHtml(METHOD_LABEL[payment.method] || payment.method)}</span></div>
     </div>
-    <p class="center">Cảm ơn quý khách!</p>`;
+    <p class="center">Cảm ơn quý khách đã sử dụng dịch vụ!</p>`;
   showPanel("receipt");
 }
 
