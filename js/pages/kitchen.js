@@ -4,24 +4,27 @@
 //   POST /auth/login, GET /auth/me                 đăng nhập
 //   GET  /kitchen/items                            hàng đợi món đã gửi bếp (pending / cooking / done), cũ nhất trước
 //   PUT  /orders/{order_id}/items/{id}/status      {status:"cooking"} hoặc {status:"done"}  (bếp, quản lý, admin)
-// Món "done" do phục vụ bấm "Đã ra món" ở màn hình gọi món, nên bếp chỉ xem ở cột Xong.
-// Trang tự làm mới 5 giây / lần để thấy món mới từ phục vụ.
+//                                                  {status:"served"}  (phục vụ, quản lý, admin: nút "Đã mang ra" ở cột Xong)
+// Trang nhận sự kiện realtime qua WebSocket; mất kết nối thì tự làm mới 5 giây / lần.
 
 const TOKEN_KEY = "token"; // cùng khoá mà js/api.js đọc để gắn Authorization
 const POLL_MS = 5000;
 const WARN_MIN = 10; // chờ từ 10 phút: đổi màu vàng
 const LATE_MIN = 20; // chờ từ 20 phút: đổi màu đỏ
 const NEW_FLASH_MS = 6000; // thẻ mới nhấp nháy viền trong 6 giây
-const CAN_COOK_ROLES = ["kitchen", "manager", "admin"]; // khớp ITEM_TRANSITIONS ở backend/app/crud/order.py
+// Khớp ITEM_TRANSITIONS ở backend/app/crud/order.py
+const COOK_ROLES = ["kitchen", "manager", "admin"]; // nhận món, nấu xong
+const SERVE_ROLES = ["waiter", "manager", "admin"]; // mang món ra cho khách
 
 const ROLE_LABEL = { admin: "Quản trị", manager: "Quản lý", cashier: "Thu ngân", waiter: "Phục vụ", kitchen: "Bếp" };
 
-// Mỗi cột: trạng thái món, nút bấm và trạng thái kế tiếp (null = bếp không đổi được nữa)
 const COLUMNS = [
-  { status: "pending", action: "Bắt đầu nấu", next: "cooking", toast: "Đang nấu" },
-  { status: "cooking", action: "Nấu xong", next: "done", toast: "Đã nấu xong" },
-  { status: "done", action: null, next: null, toast: "" },
+  { status: "pending", action: "Bắt đầu nấu", next: "cooking", toast: "Đang nấu", roles: COOK_ROLES },
+  { status: "cooking", action: "Nấu xong", next: "done", toast: "Đã nấu xong", roles: COOK_ROLES },
+  { status: "done", action: "Đã mang ra", next: "served", toast: "Đã mang ra", roles: SERVE_ROLES },
 ];
+// Vai trò hiện tại có được bấm nút của cột này không
+const canAct = (col) => !!state.user && !!col.next && col.roles.includes(state.user.role.name);
 
 const state = {
   user: null,
@@ -32,20 +35,56 @@ const state = {
   fresh: new Map(), // id món mới -> thời điểm hết nhấp nháy
   busy: new Set(), // id món đang gửi lệnh đổi trạng thái
   loading: false,
+  reloadAgain: false, // có yêu cầu tải mới lúc đang tải dở: tải lại ngay khi xong, để không lỡ sự kiện
+  pollTick: 0,
   poll: null,
   tick: null,
   sound: false,
   audio: null,
 };
 
+// ---------- Phiên đăng nhập ----------
+// Dùng chung với Auth của nhóm (js/auth.js) nếu trang có nạp; không thì dùng khoá "token" riêng của trang.
+const hasAuth = typeof Auth !== "undefined";
+function getToken() {
+  return (hasAuth && Auth.getAccessToken()) || localStorage.getItem(TOKEN_KEY);
+}
+function saveSession(tokens) {
+  localStorage.setItem(TOKEN_KEY, tokens.access_token);
+  if (hasAuth) Auth.setTokens(tokens);
+}
+function clearSession() {
+  localStorage.removeItem(TOKEN_KEY);
+  if (hasAuth) Auth.clear();
+}
+
+// api.js cũ (axios) không tự gắn token nên gắn ở đây. api.js mới (fetch) đã tự gắn, và không có biến `http`.
+if (typeof http !== "undefined") {
+  http.interceptors.request.use((config) => {
+    const token = getToken();
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+  });
+}
+
 const $ = (id) => document.getElementById(id);
 // escapeHtml (utils.js) không escape dấu nháy, nên dùng bản này khi chèn vào thuộc tính HTML
 const escAttr = (v) => escapeHtml(v).replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+// Phòng khi trang không nạp js/utils.js: tự có hàm thông báo tối thiểu
+if (typeof showToast === "undefined") {
+  window.showToast = (message, type = "success") => {
+    const el = document.createElement("div");
+    el.className = "toast toast-" + type;
+    el.textContent = message;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  };
+}
 
 // ---------- Khởi động / đăng nhập ----------
 function tokenPayload() {
   try {
-    const part = (localStorage.getItem(TOKEN_KEY) || "").split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    const part = (getToken() || "").split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
     return JSON.parse(atob(part));
   } catch (error) {
     return {};
@@ -65,16 +104,27 @@ async function loadUser(emailHint) {
 
 async function init() {
   bindEvents();
-  if (localStorage.getItem(TOKEN_KEY)) {
-    try {
-      state.user = await loadUser();
-      await startApp();
-      return;
-    } catch (error) {
-      localStorage.removeItem(TOKEN_KEY); // token hết hạn / sai
+  if (!getToken()) return showLogin();
+  try {
+    // Dùng thông tin đã lưu lúc đăng nhập, khỏi gọi /auth/me mỗi lần vào trang
+    const saved = hasAuth ? Auth.getUser() : null;
+    state.user = saved && saved.role && saved.role.name ? saved : await loadUser();
+    await startApp();
+  } catch (error) {
+    if (error.status === 401) {
+      clearSession(); // chỉ khi token thật sự hết hạn (làm mới token cũng thất bại)
+      showLogin("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.");
+    } else {
+      showFatal(error.message || String(error)); // lỗi khác (mất mạng, backend lỗi...): GIỮ phiên, chỉ báo lỗi
     }
   }
-  showLogin();
+}
+
+// Lỗi không phải hết phiên: hiện bảng bếp kèm thông báo lỗi, KHÔNG đá ra trang đăng nhập
+function showFatal(message) {
+  $("loginBox").hidden = true;
+  $("kdApp").hidden = false;
+  setOnline(false, message);
 }
 
 function showLogin(message) {
@@ -87,10 +137,9 @@ function showLogin(message) {
 
 async function startApp() {
   const roleName = state.user.role.name;
-  state.canCook = CAN_COOK_ROLES.includes(roleName);
   $("loginBox").hidden = true;
   $("kdApp").hidden = false;
-  $("kdReadonly").hidden = state.canCook;
+  $("kdReadonly").hidden = COLUMNS.some((c) => c.roles.includes(roleName)); // chỉ thu ngân... mới thấy "chế độ xem"
   $("userName").textContent = state.user.full_name;
   $("userRole").textContent = (ROLE_LABEL[roleName] || roleName) + (state.user.branch ? " · " + state.user.branch.name : "");
 
@@ -101,11 +150,13 @@ async function startApp() {
   render();
   await load();
   startTimers();
+  startRealtime();
 }
 
 function logout(message) {
   stopTimers();
-  localStorage.removeItem(TOKEN_KEY);
+  Realtime.close();
+  clearSession();
   Object.assign(state, { user: null, canCook: false, items: [], lastJson: "", seen: null });
   showLogin(message);
 }
@@ -127,7 +178,11 @@ function setOnline(ok, message) {
 }
 
 async function load() {
-  if (state.loading || !state.user) return;
+  if (!state.user) return;
+  if (state.loading) {
+    state.reloadAgain = true;
+    return;
+  }
   state.loading = true;
   try {
     // Không truyền ?status=...: backend mặc định trả đủ pending + cooking + done
@@ -140,6 +195,10 @@ async function load() {
     else setOnline(false, error.status === 0 ? "Mất kết nối, đang thử lại..." : error.message);
   } finally {
     state.loading = false;
+    if (state.reloadAgain) {
+      state.reloadAgain = false;
+      load();
+    }
   }
 }
 
@@ -166,7 +225,7 @@ function applyItems(items) {
 
 // ---------- Vẽ bảng ----------
 function cardHtml(item, col) {
-  const clickable = state.canCook && col.next;
+  const clickable = canAct(col);
   const isFresh = (state.fresh.get(item.id) || 0) > Date.now();
   const opts = item.options.length ? `<div class="kd-opts">${escapeHtml(item.options.join(", "))}</div>` : "";
   const note = item.note ? `<div class="kd-note">Ghi chú: ${escapeHtml(item.note)}</div>` : "";
@@ -287,7 +346,10 @@ function toggleSound() {
 function startTimers() {
   stopTimers();
   state.poll = setInterval(() => {
-    if (!document.hidden && state.busy.size === 0) load();
+    if (document.hidden || state.busy.size) return;
+    // Realtime đang nối thì sự kiện tự tới: chỉ tải lại mỗi 30 giây phòng khi lỡ. Mất kết nối thì 5 giây một lần như cũ.
+    if (Realtime.isOpen() && ++state.pollTick % 6 !== 0) return;
+    load();
   }, POLL_MS);
   state.tick = setInterval(updateTimes, 1000);
 }
@@ -296,6 +358,45 @@ function stopTimers() {
   clearInterval(state.poll);
   clearInterval(state.tick);
   state.poll = state.tick = null;
+}
+
+// ---------- Thông báo realtime (WebSocket) ----------
+// Backend gửi: {type:"order.sent", table_number, count} khi phục vụ gửi món xuống bếp,
+//              {type:"item.status", ...} khi món đổi trạng thái (từ màn hình bếp khác, hoặc phục vụ bấm "Đã mang ra"),
+//              {type:"order.changed", kind:"transfer|merge|split", ...} khi order đổi bàn / gộp / tách.
+function startRealtime() {
+  Realtime.connect({
+    onStatus: showLive,
+    onOpen: (isReconnect) => {
+      if (isReconnect) load(); // vừa nối lại sau khi mất kết nối: có thể đã lỡ món mới nên tải lại
+    },
+    onEvent: (msg) => {
+      if (msg.type === "order.sent") showToast(`Bàn ${msg.table_number}: ${msg.count} món mới`);
+      if (msg.type === "order.changed") showToast(describeChange(msg));
+      if (msg.type === "order.sent" || msg.type === "item.status" || msg.type === "order.changed") load(); // thẻ mới nhấp nháy và kêu ở applyItems
+    },
+    // Không tự đăng xuất khi realtime lỗi xác thực: nhãn "Hết phiên" đã hiện, chỉ đăng xuất khi bấm nút
+  });
+}
+
+// Câu báo cho bếp khi order đổi bàn / gộp / tách (thẻ món tự đổi tên bàn sau khi tải lại)
+function describeChange(msg) {
+  if (msg.kind === "transfer") return `Bàn ${msg.from_table_number} chuyển sang bàn ${msg.table_number}`;
+  if (msg.kind === "merge") return `Gộp bàn ${msg.other_table_number} vào bàn ${msg.table_number}`;
+  if (msg.kind === "split") return `Tách món từ bàn ${msg.table_number} sang bàn ${msg.other_table_number}`;
+  return "Order vừa thay đổi";
+}
+
+function showLive(name, info) {
+  const el = $("kdLive");
+  el.className = "kd-live " + name;
+  el.textContent = {
+    connecting: "Đang kết nối...",
+    open: "Trực tiếp",
+    reconnecting: `Mất kết nối, thử lại lần ${info.attempt}...`,
+    auth_failed: "Hết phiên",
+    closed: "",
+  }[name] || "";
 }
 
 // ---------- Gắn sự kiện ----------
@@ -309,12 +410,13 @@ function bindEvents() {
         email: $("loginEmail").value.trim(),
         password: $("loginPassword").value,
       });
-      localStorage.setItem(TOKEN_KEY, tokens.access_token);
+      saveSession(tokens);
       state.user = await loadUser($("loginEmail").value.trim());
+      if (hasAuth) Auth.saveUser(state.user); // để thanh menu chung biết ai đang đăng nhập
       $("loginPassword").value = "";
       await startApp();
     } catch (error) {
-      localStorage.removeItem(TOKEN_KEY);
+      clearSession();
       showLogin(error.message);
     } finally {
       button.disabled = false;
@@ -326,7 +428,7 @@ function bindEvents() {
   // Bấm vào bất kỳ chỗ nào trên thẻ (hoặc nút) để chuyển trạng thái
   document.querySelector(".kd-board").addEventListener("click", (event) => {
     const card = event.target.closest(".kd-card");
-    if (!card || !card.dataset.next || !state.canCook) return;
+    if (!card || !card.dataset.next) return; // thẻ không có data-next = vai trò này không được bấm
     changeStatus(Number(card.dataset.id), card.dataset.next);
   });
 

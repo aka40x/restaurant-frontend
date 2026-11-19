@@ -13,20 +13,20 @@
 const MENU = [
   { href: "index.html", label: "Trang chủ" },
   { href: "pages/admin/branches.html", label: "Chi nhánh", roles: ["admin"] },
-  { href: "pages/admin/pos.html", label: "Gọi món" },
-  { href: "pages/admin/kitchen.html", label: "Bếp" },
+  { href: "pages/admin/pos.html", label: "Gọi món", roles: ["waiter", "manager"] },
+  { href: "pages/admin/kitchen.html", label: "Bếp", roles: ["kitchen", "waiter", "manager"] },
 ];
 
 // Sidebar trang nội bộ. Thêm trang mới: thêm 1 dòng (roles = vai trò được thấy; admin luôn thấy).
 const SIDEBAR = [
   { href: "pages/admin/index.html", label: "Tổng quan", roles: ["manager"] },
-  { href: "pages/admin/branches.html", label: "Chi nhánh", roles: [] },            // chỉ admin
+  { href: "pages/admin/branches.html", label: "Chi nhánh", roles: [] },
   { href: "pages/admin/users.html", label: "Nhân viên", roles: ["manager"] },
   { href: "pages/admin/menu.html", label: "Menu", roles: ["manager"] },
   { href: "pages/admin/tables.html", label: "Quản lý bàn", roles: ["manager"] },
   { href: "pages/admin/reservations.html", label: "Đặt bàn", roles: ["manager", "waiter"] },
   { href: "pages/staff/tables.html", label: "Sơ đồ bàn", roles: ["manager", "waiter"] },
-  { href: "pages/staff/kitchen.html", label: "Màn hình bếp", roles: ["manager", "kitchen"] },
+  { href: "pages/admin/kitchen.html", label: "Màn hình bếp", roles: ["manager", "kitchen"] },
   { href: "pages/staff/payment.html", label: "Thanh toán", roles: ["manager", "cashier"] },
   { href: "pages/account/password.html", label: "Đổi mật khẩu", roles: ["manager", "waiter", "kitchen", "cashier"] },
 ];
@@ -55,12 +55,12 @@ function renderLayout() {
   const links = MENU.filter((item) => canSee(item, role)).map(linkHtml).join("");
 
   const userBox = user
-  ? `<div class="user-box">
+    ? `<div class="user-box">
        <a href="${root}${Auth.homePath()}" class="btn-login">Vào trang làm việc</a>
        <span>${escapeHtml(user.full_name)} · ${escapeHtml(Auth.roleLabel(user))}</span>
        <button type="button" id="btn-logout" class="btn-logout">Đăng xuất</button>
      </div>`
-  : `<div class="user-box"><a href="${root}pages/login.html" class="btn-login">Đăng nhập</a></div>`;
+    : `<div class="user-box"><a href="${root}pages/login.html" class="btn-login">Đăng nhập</a></div>`;
 
   document.getElementById("app-header").innerHTML = `
     <div class="container header-inner">
