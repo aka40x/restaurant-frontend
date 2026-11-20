@@ -174,3 +174,21 @@ textarea.po-input { min-height: 84px; resize: vertical; }
 /* ---------- Thông báo nhỏ (showToast trong utils.js) ---------- */
 body > .toast { position: fixed; top: 76px; right: 24px; bottom: auto; z-index: 1200; border-radius: 10px; padding: 12px 18px; }
 @media (max-width: 480px) { body > .toast { left: 16px; right: 16px; } }
+/* ---------- Realtime: trạng thái kết nối và thông báo nổi ---------- */
+.po-rt { font-size: 0.8rem; color: var(--po-muted); display: inline-flex; align-items: center; gap: 6px; }
+.po-rt:not(:empty)::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--po-muted); }
+.po-rt.open::before { background: var(--po-success); }
+.po-rt.reconnecting, .po-rt.auth_failed { color: var(--po-danger); font-weight: 600; }
+.po-rt.reconnecting::before, .po-rt.auth_failed::before { background: var(--po-danger); }
+
+.po-notices { position: fixed; right: 24px; bottom: 24px; z-index: 1300; display: flex; flex-direction: column; gap: 10px; width: min(340px, calc(100vw - 32px)); }
+@media (max-width: 480px) { .po-notices { right: 16px; bottom: 16px; } }
+.po-notice {
+  display: flex; flex-direction: column; gap: 2px; text-align: left; font: inherit; cursor: pointer;
+  background: var(--po-ink); color: var(--po-champagne); border: 1px solid var(--po-gold); border-radius: 10px;
+  padding: 12px 14px; box-shadow: 0 10px 28px rgba(0, 0, 0, .3); animation: po-notice-in .3s ease;
+}
+.po-notice strong { font-family: var(--po-serif); font-size: 1.15rem; }
+.po-notice span { font-size: 0.9rem; color: #fff; }
+@keyframes po-notice-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .po-notice { animation: none; } }
