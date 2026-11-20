@@ -50,3 +50,17 @@ tr.selectable { cursor: pointer; }
 tr.selectable:hover { background: var(--color-bg); }
 tr.row-selected { background: var(--color-accent); }
 .panel-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+
+/* ---------- Quản lý đặt bàn: lịch theo khung giờ (T3C6629) ---------- */
+/* ===== Bộ lọc trang quản lý đặt bàn ===== */
+.layout-2col .filters { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+.layout-2col .filters > div { flex: 1 1 160px; min-width: 0; }
+.layout-2col .filters > .day-filter { flex: 2 1 290px; }
+.layout-2col .filters .day-nav { display: flex; flex-wrap: nowrap; gap: 4px; align-items: center; }
+.layout-2col .filters .day-nav input { flex: 1 1 120px; min-width: 120px; width: auto; }
+.layout-2col .filters .day-nav .btn { flex: 0 0 auto; width: auto; white-space: nowrap; }
+@media (max-width: 520px) { .layout-2col .filters .day-nav { flex-wrap: wrap; } }
+.layout-2col > * { min-width: 0; }
+.slot-summary { margin: 8px 0 0; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; min-height: 24px; }
+tr.slot-row td { background: var(--color-bg); font-weight: 600; border-bottom: 1px solid var(--color-secondary); }
+td.actions { white-space: nowrap; text-align: right; }
