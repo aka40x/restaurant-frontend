@@ -38,6 +38,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  font-variant-numeric: lining-nums;
 }
 
 a {
@@ -1099,3 +1100,4 @@ input:disabled {
   background: #f3e3b3;
   color: #1a1a1a;
 }
+
