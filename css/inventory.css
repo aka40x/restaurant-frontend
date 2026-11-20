@@ -1,0 +1,32 @@
+/* CSS riêng của trang Kho (pages/admin/inventory.html). Để file riêng cho khỏi đụng style.css dùng chung.
+   Ô tìm kiếm, ô chọn và bộ lọc dùng sẵn .filter-row và select của style.css. */
+
+.page-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.page-head h1 { margin: 0; }
+#summary { min-height: 22px; margin: 12px 0 0; }
+td.text-right, th.text-right { font-variant-numeric: tabular-nums; }
+
+/* Dòng sắp hết: nền vàng nhạt, vạch vàng đậm bên trái (giữ màu cả khi rê chuột, nên viết đủ "tbody tr") */
+tbody tr.row-low { background: #fbf3d9; }
+tbody tr.row-low:hover { background: #f7ebc4; }
+tbody tr.row-low td:first-child { box-shadow: inset 3px 0 0 var(--color-warning); }
+
+/* Hộp thoại nhập kho / kiểm kê / thêm nguyên liệu */
+.dialog {
+  width: min(420px, calc(100vw - 32px));
+  padding: 24px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-card);
+  color: var(--color-text);
+}
+.dialog::backdrop { background: rgba(26, 26, 26, .45); }
+.dialog h2 { margin: 0 0 8px; }
+.dialog p { margin: 4px 0; }
+
+/* Màn hình hẹp: nút Thêm nguyên liệu rộng hết cỡ, cột thao tác được xuống dòng; bảng cuộn ngang trong .table-wrap */
+@media (max-width: 640px) {
+  .page-head .btn { width: 100%; }
+  .actions { white-space: normal; }
+  .actions .btn { margin: 2px 0; }
+}

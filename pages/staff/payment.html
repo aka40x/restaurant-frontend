@@ -5,38 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thu ngân | Quản lý nhà hàng</title>
   <link rel="icon" href="../../assets/images/logo.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../css/style.css">
   <style>
     /* CSS riêng của trang Thu ngân (để trong trang này cho khỏi đụng file style.css dùng chung).
        Phong cách theo trang chủ: header đen than, nền ngà, chữ serif Playfair + Inter, vàng champagne làm điểm nhấn. */
-    :root {
-      --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
-      --font-ui: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-      --gold: #b99a55;
-    }
-    body { font-family: var(--font-ui); }
-    h1, h2 { font-family: var(--font-display); font-weight: 600; color: var(--color-primary); }
+    :root { --gold: #b99a55; }
     .card { border-radius: 14px; padding: 24px; }
     main.container { padding-top: 32px; }
     .page-title { grid-column: 1 / -1; margin: 0 0 4px; font-size: 34px; }
     .layout-2col { grid-template-columns: 340px 1fr; }
-
-    /* Header đen than như trang chủ (xoá khối này nếu nhóm đổi header ở style.css dùng chung) */
-    body #app-header { background: var(--color-primary); border-bottom: 0; }
-    /* Mọi chữ trong header đều sáng để không chìm vào nền đen (tên người dùng, vai trò...) */
-    #app-header { color: #fff; }
-    #app-header span, #app-header a:not([class*="btn"]) { color: inherit; }
-    #app-header .brand { color: #fff; font-family: var(--font-display); }
-    #app-header .nav a { color: rgba(255, 255, 255, .72); }
-    #app-header .nav a:hover { background: rgba(255, 255, 255, .08); color: #fff; }
-    #app-header .nav a.active { background: transparent; color: #fff; font-weight: 600; }
-    #app-header .user-name { color: #fff; }
-    #app-header .badge { background: rgba(243, 227, 179, .16); color: var(--color-accent); }
-    #app-header .btn { background: #fff; color: var(--color-primary); border-color: #fff; border-radius: 999px; }
-    #app-header .btn:hover { background: var(--color-accent); border-color: var(--color-accent); }
 
     /* Danh sách order (bên trái) */
     .panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
@@ -49,7 +26,7 @@
     .order-item:hover { border-color: var(--color-secondary); background: var(--color-bg); }
     .order-item.active { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
     .order-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-    .order-table { font-family: var(--font-display); font-size: 20px; font-weight: 600; }
+    .order-table { font-family: var(--font-heading); font-size: 20px; font-weight: 600; }
     .order-meta { margin-top: 4px; font-size: 13px; color: var(--color-muted); }
     .order-item.active .order-meta { color: rgba(255, 255, 255, .7); }
 
@@ -61,7 +38,7 @@
 
     /* Chưa chọn order */
     .empty { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 300px; }
-    .empty-title { margin: 0 0 4px; font-family: var(--font-display); font-size: 24px; font-weight: 600; }
+    .empty-title { margin: 0 0 4px; font-family: var(--font-heading); font-size: 24px; font-weight: 600; }
     .empty .muted { margin: 0; max-width: 32ch; }
 
     /* Hoá đơn (bên phải) */
@@ -94,7 +71,7 @@
     /* Dải đen ở cuối hoá đơn: tổng tiền và nút Thanh toán, giống dải đen ở trang chủ */
     .pay-band { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 24px; padding: 22px 26px; border-radius: 14px; background: var(--color-primary); color: #fff; }
     .band-label { font-size: 14px; color: var(--color-accent); }
-    .band-amount { font-family: var(--font-display); font-size: 36px; font-weight: 600; line-height: 1.15; font-feature-settings: "lnum"; }
+    .band-amount { font-family: var(--font-heading); font-size: 36px; font-weight: 600; line-height: 1.15; font-feature-settings: "lnum"; }
     .btn-pay { padding: 12px 32px; border: 0; border-radius: 999px; background: #fff; color: var(--color-primary); font: inherit; font-weight: 600; cursor: pointer; transition: background .15s; }
     .btn-pay:hover:not(:disabled) { background: var(--color-accent); }
     .btn-pay:disabled { opacity: .45; cursor: not-allowed; }
@@ -114,8 +91,9 @@
 
     /* Khi in: chỉ giữ lại hoá đơn, ẩn menu, danh sách order và các nút */
     @media print {
-      #app-header, #app-footer, #orders-panel, .page-title, .no-print { display: none !important; }
+      #app-header, #app-footer, #orders-panel, .page-title, .no-print, .sidebar { display: none !important; }
       body { background: #fff; display: block; }
+      .admin-shell { display: block; max-width: none; padding: 0; }
       main.container { max-width: none; padding: 0; }
       .layout-2col { display: block; }
       .card { border: none; padding: 0; margin: 0; }
@@ -123,7 +101,7 @@
     }
   </style>
 </head>
-<body data-root="../../">
+<body data-root="../../" data-layout="admin">
   <header id="app-header"></header>
 
   <main class="container layout-2col">
@@ -132,10 +110,11 @@
     <!-- Bên trái: danh sách order chưa thanh toán -->
     <section class="card" id="orders-panel">
       <div class="panel-head">
-        <h2>Order chưa thanh toán</h2>
+        <h2>Order chờ thanh toán</h2>
         <button id="btn-refresh" type="button" class="btn-ghost">Làm mới</button>
       </div>
       <p id="order-count" class="muted"></p>
+      <p class="form-hint">Order chỉ hiện ở đây khi phục vụ đã đem món ra xong (trạng thái "Đã phục vụ").</p>
       <div id="order-list" class="order-list"></div>
     </section>
 
