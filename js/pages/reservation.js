@@ -38,6 +38,8 @@ async function loadBranches() {
     if (branches.length === 0) {
       branchSelect.innerHTML = `<option value="">Hiện chưa có chi nhánh hoạt động</option>`;
     }
+    const wanted = new URLSearchParams(window.location.search).get("branch_id");
+    if (wanted && branches.some((b) => String(b.id) === wanted)) branchSelect.value = wanted;
   } catch (error) {
     branchSelect.innerHTML = `<option value="">Không tải được chi nhánh</option>`;
     showToast(error.message, "error");
