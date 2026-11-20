@@ -31,3 +31,20 @@ function showToast(message, type = "success") {
     setTimeout(() => toast.remove(), 400);
   }, 3200);
 }
+// Bấm ra vùng tối (backdrop) thì <dialog> tự đóng
+(function () {
+  let downOnBackdrop = false;
+  const isBackdropHit = (dialog, event) => {
+    const r = dialog.getBoundingClientRect();
+    return event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom;
+  };
+  document.addEventListener("mousedown", (event) => {
+    const d = event.target;
+    downOnBackdrop = d instanceof HTMLDialogElement && d.open && !d.hasAttribute("data-no-backdrop-close") && isBackdropHit(d, event);
+  });
+  document.addEventListener("click", (event) => {
+    const d = event.target;
+    if (downOnBackdrop && d instanceof HTMLDialogElement && d.open && isBackdropHit(d, event)) d.close();
+    downOnBackdrop = false;
+  });
+})();
