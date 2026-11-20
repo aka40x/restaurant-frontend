@@ -42,9 +42,14 @@
           <label for="filter-branch">Chi nhánh</label>
           <select id="filter-branch"><option value="">Tất cả chi nhánh</option></select>
         </div>
-        <div>
+        <div class="day-filter" style="flex:2 1 290px;min-width:0">
           <label for="filter-day">Ngày</label>
-          <input id="filter-day" type="date">
+          <div class="day-nav" style="display:flex;flex-wrap:nowrap;gap:4px;align-items:center">
+            <button type="button" class="btn btn-small" id="day-prev" aria-label="Ngày trước" style="flex:0 0 auto;width:auto;margin:0">‹</button>
+            <input id="filter-day" type="date" style="flex:1 1 120px;min-width:120px;width:auto;margin:0">
+            <button type="button" class="btn btn-small" id="day-next" aria-label="Ngày sau" style="flex:0 0 auto;width:auto;margin:0">›</button>
+            <button type="button" class="btn btn-small" id="day-today" style="flex:0 0 auto;width:auto;margin:0;white-space:nowrap">Hôm nay</button>
+          </div>
         </div>
         <div>
           <label for="filter-status">Trạng thái</label>
@@ -63,6 +68,7 @@
         </div>
       </div>
       <div class="muted" id="list-summary"></div>
+      <div class="slot-summary" id="slot-summary"></div>
 
       <div class="table-wrap">
         <table>
@@ -73,6 +79,7 @@
               <th>Số người</th>
               <th>Chi nhánh / Bàn</th>
               <th>Trạng thái</th>
+              <th></th>
             </tr>
           </thead>
           <tbody id="reservation-table-body"></tbody>

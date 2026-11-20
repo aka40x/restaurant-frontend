@@ -1,40 +1,35 @@
-// Phần dùng chung cho trang quản lý đặt bàn (pages/admin/reservations.html).
-// Nạp TRƯỚC reservations.js. Chỉ chứa hằng số và hàm nhỏ, không đụng tới DOM.
+// Hàm dùng chung cho các trang đặt bàn (module M3): nhãn trạng thái, giờ, ngày.
+// Nạp file này TRƯỚC script riêng của trang. Tên bắt đầu bằng RESERVATION_ / res để khỏi trùng với trang khác.
 
-// Trạng thái đặt bàn (khớp backend: pending / confirmed / seated / cancelled / no_show)
+// Trạng thái đặt bàn -> [nhãn tiếng Việt, class badge trong css/style.css]
 const RESERVATION_STATUS = {
-  pending: { label: "Chờ xác nhận", badge: "badge-warning" },
-  confirmed: { label: "Đã xác nhận", badge: "badge-info" },
-  seated: { label: "Đã nhận bàn", badge: "badge-success" },
-  cancelled: { label: "Đã huỷ", badge: "badge-danger" },
-  no_show: { label: "Không đến", badge: "badge-muted" },
+  pending: ["Chờ xác nhận", "badge-warning"],
+  confirmed: ["Đã xác nhận", "badge-info"],
+  seated: ["Đã nhận bàn", "badge-success"],
+  cancelled: ["Đã huỷ", "badge-muted"],
+  no_show: ["Không đến", "badge-danger"],
 };
 
-function reservationStatusBadge(status) {
-  const info = RESERVATION_STATUS[status] || { label: status || "?", badge: "badge-muted" };
-  return `<span class="badge ${info.badge}">${escapeHtml(info.label)}</span>`;
+// <span class="badge ...">Chờ xác nhận</span>
+function reservationBadge(status) {
+  const [label, badge] = RESERVATION_STATUS[status] || [status, "badge-muted"];
+  return `<span class="badge ${badge}">${escapeHtml(label)}</span>`;
 }
 
-// "2026-11-18T19:30:00" -> "19:30"
-function formatTimeHM(value) {
-  return new Date(value).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+// "2026-11-26T19:00:00" -> "19:00"
+function resTime(value) {
+  return new Date(value).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", hour12: false });
 }
 
-// "2026-11-18T19:30:00" -> "18/11/2026"
-function formatDateDMY(value) {
-  return new Date(value).toLocaleDateString("vi-VN");
-}
-
-// Ngày hôm nay theo giờ máy, dạng "YYYY-MM-DD" cho <input type="date">.
-// Không dùng toISOString() vì nó tính theo UTC, buổi sáng ở Việt Nam sẽ ra ngày hôm qua.
-function todayInputValue() {
-  const d = new Date();
+// Date -> "2026-11-26" (giờ máy người dùng, dùng cho ô chọn ngày)
+function resDateInput(date = new Date()) {
   const pad = (n) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
 
-// { table_number: "A1", area: "Tầng 1", capacity: 4 } -> "A1 · Tầng 1"
-function reservationTableText(table) {
-  if (!table) return "Chưa xếp bàn";
-  return table.area ? `${table.table_number} · ${table.area}` : table.table_number;
+// Cộng / trừ ngày cho chuỗi "YYYY-MM-DD"
+function resAddDays(dateString, days) {
+  const d = new Date(`${dateString}T00:00:00`);
+  d.setDate(d.getDate() + days);
+  return resDateInput(d);
 }
