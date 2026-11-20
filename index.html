@@ -5,63 +5,71 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nhà hàng | Ẩm thực thượng hạng</title>
   <link rel="icon" href="assets/images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/reservation.css">
+  <link rel="stylesheet" href="css/home.css">
 </head>
 <body class="reservation-page" data-root="./">
   <header id="app-header"></header>
 
-  <main class="home-page">
-    <section class="home-hero">
-      <div class="container home-hero-wrapper">
-        <div class="home-hero-content">
-          <p class="eyebrow">TRẢI NGHIỆM THƯỢNG VỊ · ĐẶT BÀN TRỰC TUYẾN</p>
-          <h1>Nghệ Thuật Đón Tiếp</h1>
-          <p>Quý khách vui lòng đặt chỗ trước để chúng tôi chuẩn bị đón tiếp chu đáo nhất. Mỗi bữa tiệc là một hành trình cảm thụ ẩm thực tao nhã và chuẩn mực.</p>
-          <div class="hero-actions">
-            <a class="btn btn-book" href="pages/customer/reservation.html">Đặt Bàn Ngay</a>
-            <a class="btn btn-hero-outline" href="pages/customer/menu.html">Xem thực đơn</a>
-            <a class="btn btn-hero-outline" href="pages/customer/branches.html">Chi nhánh</a>
-          </div>
-        </div>
-        <div class="hero-assurance">
-          <span aria-hidden="true">✧</span>
-          <div class="assurance-text">
-            <strong>Bảo đảm sự riêng tư</strong>
-            <small>Phục vụ với sự tận tâm không giới hạn</small>
-          </div>
+  <main class="hp">
+    <section class="hp-hero" style="background-image: url('https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1800&q=85');">
+      <div class="hp-hero-inner">
+        <span class="hp-tag">Ẩm thực thượng lưu &amp; không gian trang nhã</span>
+        <h1>Tinh Hoa Ẩm Thực Đương Đại</h1>
+        <p>Khám phá hương vị được chế biến từ nguyên liệu tươi ngon nhất, trong không gian kiến trúc thanh lịch và ấm cúng.</p>
+        <div class="hp-cta">
+          <a class="hp-btn hp-btn-gold" href="pages/customer/reservation.html">Đặt bàn ngay</a>
+          <a class="hp-btn hp-btn-ghost" href="pages/customer/menu.html">Khám phá thực đơn</a>
         </div>
       </div>
     </section>
 
-    <section class="container home-content" id="experience">
-      <div class="home-intro">
-        <p class="eyebrow">HƯƠNG VỊ CỦA NHỮNG KHOẢNH KHẮC</p>
-        <h2>Trọn vẹn trong từng trải nghiệm</h2>
-        <p>Từ bữa trưa tinh tế đến yến tiệc riêng tư, đội ngũ Concierge luôn sẵn sàng chuẩn bị không gian phù hợp cho quý khách.</p>
+    <div class="hp-wrap hp-pills">
+      <div class="hp-pills-grid">
+        <div class="hp-pill"><strong>Ẩm thực theo mùa</strong><span>Nguyên liệu tuyển chọn, hương vị được chăm chút mỗi ngày.</span></div>
+        <div class="hp-pill"><strong>Không gian tinh tế</strong><span>Phòng riêng, bàn cạnh cửa sổ và sảnh tiệc cho mọi dịp đặc biệt.</span></div>
+        <div class="hp-pill"><strong>Đón tiếp tận tâm</strong><span>Chia sẻ yêu cầu khi đặt bàn để chúng tôi chuẩn bị chu đáo.</span></div>
       </div>
-      <div class="experience-grid">
-        <article class="experience-card"><span>01</span><h3>Ẩm thực theo mùa</h3><p>Nguyên liệu tuyển chọn và hương vị được chăm chút mỗi ngày.</p></article>
-        <article class="experience-card"><span>02</span><h3>Không gian tinh tế</h3><p>Phòng riêng, bàn cạnh cửa sổ và sảnh tiệc dành cho mọi dịp đặc biệt.</p></article>
-        <article class="experience-card"><span>03</span><h3>Đón tiếp tận tâm</h3><p>Chia sẻ yêu cầu của quý khách khi đặt bàn để chúng tôi chuẩn bị chu đáo.</p></article>
+    </div>
+
+    <section class="hp-section" id="menu">
+      <div class="hp-wrap">
+        <div class="hp-head">
+          <span class="hp-tag">Thực đơn đương đại</span>
+          <h2>Khám Phá Hương Vị Thượng Hạng</h2>
+          <p>Một vài món được yêu thích nhất tại nhà hàng.</p>
+        </div>
+        <div class="hp-grid" id="featured-grid"></div>
+        <div class="hp-more"><a class="hp-btn hp-btn-line" href="pages/customer/menu.html">Xem toàn bộ thực đơn →</a></div>
       </div>
-      <div class="home-cta">
-        <div><p class="eyebrow">CHUẨN BỊ CHO CUỘC HẸN TIẾP THEO</p><h2>Chúng tôi đã sẵn sàng đón tiếp quý khách</h2></div>
-        <a class="btn btn-dark" href="pages/customer/reservation.html">Đặt bàn trực tuyến&nbsp; →</a>
+    </section>
+
+    <section class="hp-section hp-section-alt" id="branches">
+      <div class="hp-wrap">
+        <div class="hp-head">
+          <span class="hp-tag">Hệ thống chi nhánh</span>
+          <h2>Tìm Nhà Hàng Gần Bạn</h2>
+        </div>
+        <div class="hp-branches" id="branch-grid"></div>
       </div>
-      <details class="connection-details">
-        <summary>Trạng thái hệ thống</summary>
-        <span>API: <code id="api-url"></code></span>
-        <div id="health-status" class="status"></div>
-        <button id="btn-recheck" class="btn">Kiểm tra lại</button>
-      </details>
+    </section>
+
+    <section class="hp-banner">
+      <div class="hp-wrap">
+        <h2>Chúng tôi đã sẵn sàng đón tiếp quý khách</h2>
+        <a class="hp-btn hp-btn-gold" href="pages/customer/reservation.html">Đặt bàn trực tuyến →</a>
+        <a class="hp-btn hp-btn-ghost" href="pages/customer/reservation-lookup.html" style="margin-left:10px">Tra cứu đặt bàn</a>
+      </div>
     </section>
   </main>
 
   <footer id="app-footer"></footer>
 
-  <!-- Thứ tự quan trọng: config -> api -> utils -> layout -> script riêng của trang -->
-  <script src="https://cdn.jsdelivr.net/npm/axios@1.7.9/dist/axios.min.js"></script>
+  <!-- Thứ tự quan trọng: config -> auth -> api -> utils -> layout -> script riêng của trang -->
   <script src="js/config.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/api.js"></script>

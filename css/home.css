@@ -1,0 +1,409 @@
+/* Trang chủ — giao diện theo bộ "aaa" (đen than, vàng champagne, nền ngà).
+   Mọi class đều bắt đầu bằng .hp- và nằm trong <main class="hp"> nên không đụng style.css / reservation.css. */
+
+.hp {
+  --hp-black: #141414;
+  --hp-gold: #d4af37;
+  --hp-gold-hover: #e5c378;
+  --hp-champagne: #f3e3b3;
+  --hp-nude: #e8c9a9;
+  --hp-ivory: #faf6ee;
+  --hp-border: #e6dccb;
+  --hp-text: #1a1a1a;
+  --hp-muted: #736b5e;
+  --hp-serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --hp-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--hp-ivory);
+  color: var(--hp-text);
+  font-family: var(--hp-sans);
+}
+.hp-wrap {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ---------- Nút ---------- */
+.hp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 26px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  font: 600 0.95rem var(--hp-sans);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    border-color 0.2s,
+    transform 0.2s;
+}
+.hp-btn:active {
+  transform: translateY(1px);
+}
+.hp-btn-gold {
+  background: var(--hp-champagne);
+  color: var(--hp-text);
+}
+.hp-btn-gold:hover {
+  background: var(--hp-gold-hover);
+}
+.hp-btn-ghost {
+  border-color: rgba(243, 227, 179, 0.6);
+  color: var(--hp-champagne);
+  background: transparent;
+}
+.hp-btn-ghost:hover {
+  background: rgba(243, 227, 179, 0.12);
+}
+.hp-btn-dark {
+  background: var(--hp-black);
+  color: var(--hp-champagne);
+}
+.hp-btn-dark:hover {
+  background: #2a2a2a;
+}
+.hp-btn-line {
+  border-color: var(--hp-black);
+  color: var(--hp-black);
+  background: transparent;
+}
+.hp-btn-line:hover {
+  background: var(--hp-black);
+  color: var(--hp-champagne);
+}
+
+/* ---------- Hero ---------- */
+.hp-hero {
+  position: relative;
+  isolation: isolate;
+  color: #fff;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 560px;
+  padding: 90px 20px;
+  background: #141414 center 48% / cover no-repeat;
+}
+.hp-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    90deg,
+    rgba(10, 10, 10, 0.78) 0%,
+    rgba(10, 10, 10, 0.5) 55%,
+    rgba(10, 10, 10, 0.3) 100%
+  );
+}
+.hp-hero-inner {
+  max-width: 850px;
+}
+.hp-tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--hp-champagne);
+  margin-bottom: 18px;
+}
+.hp-hero h1 {
+  font: 600 clamp(2.2rem, 6vw, 4rem) / 1.12 var(--hp-serif);
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-wrap: balance;
+  color: #fff;
+}
+.hp-hero p {
+  max-width: 650px;
+  margin: 18px auto 0;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.86);
+}
+.hp-cta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 30px;
+}
+
+/* ---------- 3 điểm nhấn ---------- */
+.hp-pills {
+  margin-top: -40px;
+  position: relative;
+  z-index: 2;
+}
+.hp-pills-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.hp-pill {
+  background: #fff;
+  border: 1px solid var(--hp-border);
+  border-radius: 8px;
+  padding: 22px 24px;
+  box-shadow: 0 8px 24px rgba(20, 20, 20, 0.06);
+}
+.hp-pill strong {
+  display: block;
+  font: 600 1.25rem var(--hp-serif);
+  margin-bottom: 6px;
+}
+.hp-pill span {
+  font-size: 0.88rem;
+  color: var(--hp-muted);
+  line-height: 1.6;
+}
+
+/* ---------- Section ---------- */
+.hp-section {
+  padding: 84px 0;
+}
+.hp-section-alt {
+  background: rgba(232, 201, 169, 0.12);
+  border-top: 1px solid var(--hp-border);
+  border-bottom: 1px solid var(--hp-border);
+}
+.hp-head {
+  max-width: 760px;
+  margin: 0 auto 40px;
+  text-align: center;
+}
+.hp-head .hp-tag {
+  color: #a5862a;
+}
+.hp-head h2 {
+  font: 600 clamp(1.8rem, 4vw, 2.6rem) / 1.2 var(--hp-serif);
+  margin: 0 0 10px;
+  color: var(--hp-black);
+}
+.hp-head p {
+  margin: 0;
+  color: var(--hp-muted);
+  line-height: 1.7;
+}
+.hp-more {
+  text-align: center;
+  margin-top: 36px;
+}
+
+/* ---------- Thẻ món ---------- */
+.hp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 26px;
+}
+.hp-dish {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid var(--hp-border);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(20, 20, 20, 0.05);
+  transition:
+    transform 0.25s,
+    box-shadow 0.25s,
+    border-color 0.25s;
+}
+.hp-dish:hover {
+  transform: translateY(-5px);
+  border-color: rgba(212, 175, 55, 0.45);
+  box-shadow: 0 14px 32px rgba(20, 20, 20, 0.1);
+}
+.hp-dish-photo {
+  position: relative;
+  height: 210px;
+  background: #efe8dc;
+  overflow: hidden;
+}
+.hp-dish-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s;
+}
+.hp-dish:hover .hp-dish-photo img {
+  transform: scale(1.045);
+}
+.hp-noimg {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #a89c85;
+  background: #efe8dc;
+}
+.hp-dish-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 20px 22px 22px;
+}
+.hp-dish-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.hp-dish-name {
+  font: 600 1.3rem / 1.25 var(--hp-serif);
+  margin: 0;
+  color: var(--hp-text);
+}
+.hp-dish-price {
+  font: 700 1.15rem var(--hp-serif);
+  white-space: nowrap;
+  color: var(--hp-black);
+}
+.hp-dish-desc {
+  margin: 0 0 14px;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--hp-muted);
+  flex: 1;
+}
+.hp-dish-cat {
+  align-self: flex-start;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #a5862a;
+  padding-top: 12px;
+  border-top: 1px solid #f0eae1;
+  width: 100%;
+}
+
+/* ---------- Chi nhánh ---------- */
+.hp-branches {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+.hp-branch {
+  background: #fff;
+  border: 1px solid var(--hp-border);
+  border-radius: 8px;
+  padding: 26px;
+}
+.hp-branch-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.hp-branch h3 {
+  font: 600 1.35rem var(--hp-serif);
+  margin: 0;
+}
+.hp-open {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  background: #e3ede4;
+  color: #22562e;
+}
+.hp-open.is-closed {
+  background: #efe8dc;
+  color: #736b5e;
+}
+.hp-branch p {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  color: var(--hp-muted);
+  line-height: 1.6;
+}
+.hp-branch a {
+  color: inherit;
+}
+.hp-branch .hp-btn {
+  margin-top: 12px;
+  min-height: 40px;
+  padding: 0 18px;
+}
+.hp-branch strong {
+  color: var(--hp-text);
+  font-weight: 600;
+}
+
+/* ---------- CTA ---------- */
+.hp-banner {
+  background: var(--hp-black);
+  color: var(--hp-champagne);
+  padding: 64px 0;
+  text-align: center;
+}
+.hp-banner h2 {
+  font: 600 clamp(1.7rem, 4vw, 2.4rem) / 1.2 var(--hp-serif);
+  margin: 0 0 22px;
+  color: #fff;
+}
+
+/* ---------- Trạng thái ---------- */
+.hp-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 16px;
+  color: var(--hp-muted);
+  line-height: 1.7;
+}
+.hp-state.is-error {
+  color: #8a2b1a;
+}
+.hp-skeleton {
+  height: 330px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #efe8dc 25%, #f7f2e9 50%, #efe8dc 75%);
+  background-size: 200% 100%;
+  animation: hp-shimmer 1.3s infinite;
+}
+@keyframes hp-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 980px) {
+  .hp-grid,
+  .hp-branches {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .hp-hero {
+    min-height: 460px;
+    padding: 64px 16px 76px;
+  }
+  .hp-pills-grid,
+  .hp-grid,
+  .hp-branches {
+    grid-template-columns: 1fr;
+  }
+  .hp-section {
+    padding: 56px 0;
+  }
+  .hp-cta .hp-btn {
+    flex: 1 1 100%;
+  }
+  .hp-dish-photo {
+    height: 190px;
+  }
+}
