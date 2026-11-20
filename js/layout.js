@@ -14,9 +14,14 @@ const MENU = [
   { href: "pages/customer/menu.html", label: "Thực đơn" },
   { href: "pages/customer/branches.html", label: "Chi nhánh" },
   { href: "pages/customer/reservation.html", label: "Đặt bàn" },
+<<<<<<< HEAD
   { href: "pages/admin/branches.html", label: "Chi nhánh", roles: ["admin"] },
   { href: "pages/admin/pos.html", label: "Gọi món", roles: ["waiter", "manager"] },
   { href: "pages/admin/kitchen.html", label: "Bếp", roles: ["kitchen", "waiter", "manager"] },
+=======
+  { href: "pages/admin/pos.html", label: "Gọi món", roles: ["waiter"] },
+  { href: "pages/admin/kitchen.html", label: "Bếp", roles: ["kitchen"] },
+>>>>>>> fa209d2d8b854c67d6252d8764b153e13a827b85
 ];
 
 // Sidebar trang nội bộ. Thêm trang mới: thêm 1 dòng (roles = vai trò được thấy; admin luôn thấy).
