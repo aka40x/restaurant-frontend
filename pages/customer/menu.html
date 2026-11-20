@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thực đơn | Nhà hàng</title>
+  <link rel="icon" href="../../assets/images/logo.svg">
+  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="stylesheet" href="../../css/public.css">
+</head>
+<body data-root="../../">
+  <header id="app-header"></header>
+
+  <main class="container">
+    <div class="pub-head">
+      <h1>Thực đơn</h1>
+      <p>Lọc theo nhóm món hoặc gõ tên món bạn muốn tìm.</p>
+    </div>
+    <div class="menu-bar">
+      <input id="menu-search" class="menu-search" type="search" placeholder="Tìm món, ví dụ: pizza" aria-label="Tìm món">
+      <div id="chips" class="chips" role="group" aria-label="Nhóm món"></div>
+    </div>
+    <div id="menu-list"><p class="muted">Đang tải thực đơn...</p></div>
+    <div class="menu-cta">
+      <h2>Chọn món rồi? Giữ bàn cho bạn.</h2>
+      <a class="btn btn-book" href="reservation.html">Đặt bàn</a>
+    </div>
+  </main>
+
+  <dialog id="dish-dialog" aria-labelledby="dlg-title">
+    <div id="dlg-photo" class="dish-photo"></div>
+    <div class="dlg-body">
+      <h2 id="dlg-title"></h2>
+      <span id="dlg-price" class="price"></span>
+      <span id="dlg-soldout" class="badge badge-muted" hidden>Tạm hết</span>
+      <p id="dlg-desc"></p>
+      <div class="dlg-actions">
+        <button type="button" id="dlg-close" class="dish-more">Đóng</button>
+        <a id="dlg-book" class="btn btn-book" href="reservation.html">Đặt bàn</a>
+      </div>
+    </div>
+  </dialog>
+
+  <footer id="app-footer"></footer>
+
+  <script src="../../js/config.js"></script>
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/api.js"></script>
+  <script src="../../js/utils.js"></script>
+  <script src="../../js/layout.js"></script>
+  <script src="../../js/pages/public-menu.js"></script>
+</body>
+</html>

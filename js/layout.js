@@ -12,9 +12,11 @@
 // Menu ngang trên header (trang công khai). roles: chỉ hiện cho vai trò liệt kê; không ghi = ai cũng thấy. admin thấy tất cả.
 const MENU = [
   { href: "index.html", label: "Trang chủ" },
-  { href: "pages/admin/branches.html", label: "Chi nhánh", roles: ["admin"] },
-  { href: "pages/admin/pos.html", label: "Gọi món" },
-  { href: "pages/admin/kitchen.html", label: "Bếp" },
+  { href: "pages/customer/menu.html", label: "Thực đơn" },
+  { href: "pages/customer/branches.html", label: "Chi nhánh" },
+  { href: "pages/customer/reservation.html", label: "Đặt bàn" },
+  { href: "pages/admin/pos.html", label: "Gọi món", roles: ["waiter"] },
+  { href: "pages/admin/kitchen.html", label: "Bếp", roles: ["kitchen"] },
 ];
 
 // Sidebar trang nội bộ. Thêm trang mới: thêm 1 dòng (roles = vai trò được thấy; admin luôn thấy).

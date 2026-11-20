@@ -1099,3 +1099,29 @@ input:disabled {
   background: #f3e3b3;
   color: #1a1a1a;
 }
+/* ---------- Header gọn gàng: không xuống dòng, nút đăng nhập đọc được ---------- */
+.header-inner { gap: 24px; }
+.brand span { white-space: nowrap; }
+.nav { flex-wrap: nowrap; }
+.nav a { white-space: nowrap; }
+.user-box { flex-shrink: 0; white-space: nowrap; }
+.btn-logout { white-space: nowrap; }
+
+/* Nút Đăng nhập / Vào trang làm việc: viền đen chữ đen trên nền header trắng */
+.user-box .btn-login {
+  padding: 6px 14px;
+  font-size: 13px;
+  letter-spacing: 0;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  background: transparent;
+}
+.user-box .btn-login:hover {
+  background: var(--color-primary);
+  color: var(--color-accent);
+}
+
+/* Màn hình hẹp: ẩn dòng "Tên · Vai trò" cho đỡ chật */
+@media (max-width: 1100px) {
+  .user-box > span { display: none; }
+}
