@@ -26,23 +26,52 @@ const SIDEBAR = [
   { href: "pages/admin/users.html", label: "Nhân viên", roles: ["manager"] },
   { href: "pages/admin/menu.html", label: "Menu", roles: ["manager"] },
   { href: "pages/admin/tables.html", label: "Quản lý bàn", roles: ["manager"] },
-  { href: "pages/admin/reservations.html", label: "Đặt bàn", roles: ["manager", "waiter"] },
-  { href: "pages/staff/tables.html", label: "Sơ đồ bàn", roles: ["manager", "waiter"] },
-  { href: "pages/admin/kitchen.html", label: "Màn hình bếp", roles: ["manager", "kitchen"] },
+  {
+    href: "pages/admin/reservations.html",
+    label: "Đặt bàn",
+    roles: ["manager", "waiter"],
+  },
+  {
+    href: "pages/staff/tables.html",
+    label: "Sơ đồ bàn",
+    roles: ["manager", "waiter"],
+  },
+  {
+    href: "pages/admin/kitchen.html",
+    label: "Màn hình bếp",
+    roles: ["manager", "kitchen"],
+  },
   { href: "pages/admin/inventory.html", label: "Kho", roles: ["manager"] },
-  { href: "pages/staff/kitchen.html", label: "Màn hình bếp", roles: ["manager", "kitchen"] },
-  { href: "pages/staff/payment.html", label: "Thanh toán", roles: ["manager", "cashier"] },
-  { href: "pages/account/password.html", label: "Đổi mật khẩu", roles: ["manager", "waiter", "kitchen", "cashier"] },
+  {
+    href: "pages/staff/kitchen.html",
+    label: "Màn hình bếp",
+    roles: ["manager", "kitchen"],
+  },
+  {
+    href: "pages/staff/payment.html",
+    label: "Thanh toán",
+    roles: ["manager", "cashier"],
+  },
+  {
+    href: "pages/account/password.html",
+    label: "Đổi mật khẩu",
+    roles: ["manager", "waiter", "kitchen", "cashier"],
+  },
 ];
 
 // Chặn chèn HTML lạ khi đưa tên người dùng vào innerHTML
 function escapeHtml(text) {
-  return String(text ?? "").replace(/[&<>"']/g, (ch) => (
-    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]
-  ));
+  return String(text ?? "").replace(
+    /[&<>"']/g,
+    (ch) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
+        ch
+      ],
+  );
 }
 
-const canSee = (item, role) => !item.roles || role === "admin" || item.roles.includes(role);
+const canSee = (item, role) =>
+  !item.roles || role === "admin" || item.roles.includes(role);
 
 function renderLayout() {
   const root = document.body.dataset.root || "./";
@@ -51,12 +80,15 @@ function renderLayout() {
   const role = user?.role?.name;
   const useSidebar = document.body.dataset.layout === "admin" && !!user;
 
-  const isActive = (item) => currentPath.endsWith("/" + item.href) ||
+  const isActive = (item) =>
+    currentPath.endsWith("/" + item.href) ||
     (item.href === "index.html" && currentPath.endsWith("/"));
   const linkHtml = (item) =>
     `<a href="${root}${item.href}" class="${isActive(item) ? "active" : ""}">${escapeHtml(item.label)}</a>`;
 
-  const links = MENU.filter((item) => canSee(item, role)).map(linkHtml).join("");
+  const links = MENU.filter((item) => canSee(item, role))
+    .map(linkHtml)
+    .join("");
 
   const userBox = user
     ? `<div class="user-box">
@@ -77,9 +109,35 @@ function renderLayout() {
     </div>`;
 
   document.getElementById("app-footer").innerHTML = `
-    <div class="container">© ${new Date().getFullYear()} Nhóm 6 · Hệ thống quản lý nhà hàng · HN-KS25-CNTT1</div>`;
+    <div class="site-footer">
+      <div class="site-footer-main">
+        <div>
+          <div class="sf-brand">${CONFIG.APP_NAME}</div>
+          <p class="sf-desc">Không gian ẩm thực Ý ấm cúng, phục vụ tận tâm tại nhiều chi nhánh.</p>
+        </div>
+        <nav aria-label="Khám phá">
+          <h3 class="sf-title">Khám phá</h3>
+          <a href="${root}index.html">Trang chủ</a>
+          <a href="${root}pages/customer/menu.html">Thực đơn</a>
+          <a href="${root}pages/customer/branches.html">Chi nhánh</a>
+        </nav>
+        <nav aria-label="Đặt bàn">
+          <h3 class="sf-title">Đặt bàn</h3>
+          <a href="${root}pages/customer/reservation.html">Đặt bàn trực tuyến</a>
+          <a href="${root}pages/customer/reservation-lookup.html">Tra cứu đặt bàn</a>
+        </nav>
+        <div>
+          <h3 class="sf-title">Liên hệ</h3>
+          <p>Hotline đặt bàn</p>
+          <a class="sf-phone" href="tel:19008888">1900 8888</a>
+        </div>
+      </div>
+      <div class="site-footer-bottom">© ${new Date().getFullYear()} Nhóm 6 · Hệ thống quản lý nhà hàng · HN-KS25-CNTT1</div>
+    </div>`;
 
-  document.getElementById("btn-logout")?.addEventListener("click", () => Auth.logout());
+  document
+    .getElementById("btn-logout")
+    ?.addEventListener("click", () => Auth.logout());
 
   if (useSidebar) renderSidebar(role, linkHtml);
 }
@@ -92,7 +150,11 @@ function renderSidebar(role, linkHtml) {
   shell.className = "admin-shell";
   const aside = document.createElement("aside");
   aside.className = "sidebar";
-  aside.innerHTML = `<nav aria-label="Menu quản lý">${SIDEBAR.filter((i) => canSee(i, role)).map(linkHtml).join("")}</nav>`;
+  aside.innerHTML = `<nav aria-label="Menu quản lý">${SIDEBAR.filter((i) =>
+    canSee(i, role),
+  )
+    .map(linkHtml)
+    .join("")}</nav>`;
   main.parentNode.insertBefore(shell, main);
   shell.append(aside, main);
   document.body.classList.add("has-sidebar");

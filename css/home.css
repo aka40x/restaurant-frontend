@@ -267,6 +267,7 @@
 }
 .hp-dish-price {
   font: 700 1.15rem var(--hp-serif);
+  font-variant-numeric: lining-nums tabular-nums;
   white-space: nowrap;
   color: var(--hp-black);
 }
