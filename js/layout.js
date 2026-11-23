@@ -43,11 +43,6 @@ const SIDEBAR = [
   },
   { href: "pages/admin/inventory.html", label: "Kho", roles: ["manager"] },
   {
-    href: "pages/staff/kitchen.html",
-    label: "Màn hình bếp",
-    roles: ["manager", "kitchen"],
-  },
-  {
     href: "pages/staff/payment.html",
     label: "Thanh toán",
     roles: ["manager", "cashier"],
@@ -90,12 +85,13 @@ function renderLayout() {
     .map(linkHtml)
     .join("");
 
+  const onHome = !!user && currentPath.endsWith("/" + Auth.homePath());
   const userBox = user
     ? `<div class="user-box">
-       <a href="${root}${Auth.homePath()}" class="btn-login">Vào trang làm việc</a>
-       <span>${escapeHtml(user.full_name)} · ${escapeHtml(Auth.roleLabel(user))}</span>
-       <button type="button" id="btn-logout" class="btn-logout">Đăng xuất</button>
-     </div>`
+        ${onHome ? "" : `<a href="${root}${Auth.homePath()}" class="btn-login">Vào trang làm việc</a>`}
+        <span>${escapeHtml(user.full_name)} · ${escapeHtml(Auth.roleLabel(user))}</span>
+        <button type="button" id="btn-logout" class="btn-logout">Đăng xuất</button>
+      </div>`
     : `<div class="user-box"><a href="${root}pages/login.html" class="btn-login">Đăng nhập</a></div>`;
 
   document.getElementById("app-header").innerHTML = `

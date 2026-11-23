@@ -118,3 +118,5 @@ body > .toast { top: 76px; right: 24px; bottom: auto; }
 .kd-live.reconnecting::before, .kd-live.auth_failed::before { background: var(--kd-danger); }
 @keyframes kd-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
 @media (prefers-reduced-motion: reduce) { .kd-live.open::before { animation: none; } }
+
+.kd-user, #btnLogout { display: none; }
