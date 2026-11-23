@@ -14,10 +14,12 @@ let keyword = "";
 const imgSrc = (url) => (/^(https?:|data:|\/)/.test(url) ? url : "../../" + url);
 const norm = (s) => String(s ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").toLowerCase();
 const categoryName = (id) => (categories.find((c) => c.id === id) || {}).name || "";
+// escapeHtml chưa escape dấu " và ', nên khi chèn vào thuộc tính HTML (src, alt) phải dùng hàm này
+const escapeAttr = (value) => escapeHtml(value).replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 
 function photoHtml(m) {
   return m.image_url
-    ? `<img src="${escapeHtml(imgSrc(m.image_url))}" alt="${escapeHtml(m.name)}" loading="lazy">`
+    ? `<img src="${escapeAttr(imgSrc(m.image_url))}" alt="${escapeAttr(m.name)}" loading="lazy">`
     : escapeHtml(m.name.charAt(0));
 }
 

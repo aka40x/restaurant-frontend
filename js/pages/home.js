@@ -4,10 +4,13 @@
 
 const hhmm = (t) => String(t || "").slice(0, 5); // "10:00:00" -> "10:00"
 const minutes = (t) => { const [h, m] = hhmm(t).split(":").map(Number); return h * 60 + m; };
+// escapeHtml chưa escape dấu " và ', nên khi chèn vào thuộc tính HTML (src, alt, href) phải dùng hàm này
+const escapeAttr = (value) => escapeHtml(value).replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 
 function isOpenNow(b) {
   const now = new Date().getHours() * 60 + new Date().getMinutes();
   const open = minutes(b.open_time), close = minutes(b.close_time);
+  if (open === close) return true; // giờ mở = giờ đóng: hiểu là mở cả ngày
   return open <= close ? now >= open && now < close : now >= open || now < close;
 }
 
@@ -17,7 +20,7 @@ function dishHtml(m, categoryName) {
     <article class="hp-dish">
       <div class="hp-dish-photo">
         ${m.image_url
-          ? `<img src="${escapeHtml(m.image_url)}" alt="${escapeHtml(m.name)}" loading="lazy">`
+          ? `<img src="${escapeAttr(m.image_url)}" alt="${escapeAttr(m.name)}" loading="lazy">`
           : `<div class="hp-noimg">Chưa có ảnh</div>`}
       </div>
       <div class="hp-dish-body">
@@ -37,7 +40,8 @@ async function loadFeatured() {
   try {
     const [categories, items] = await Promise.all([api.get("/public/categories"), api.get("/public/menu-items")]);
     const name = (id) => categories.find((c) => c.id === id)?.name || "";
-    const picks = items.filter((m) => m.is_available !== false).slice(0, 6);
+    const known = new Set(categories.map((c) => c.id)); // khớp trang menu: món thuộc danh mục đã ngừng thì không hiện
+    const picks = items.filter((m) => m.is_available !== false && known.has(m.category_id)).slice(0, 6);
     box.innerHTML = picks.length
       ? picks.map((m) => dishHtml(m, name(m.category_id))).join("")
       : `<div class="hp-state">Thực đơn đang được cập nhật.</div>`;
@@ -60,7 +64,7 @@ async function loadBranches() {
             <span class="hp-open ${open ? "" : "is-closed"}">${open ? "Đang mở cửa" : "Đã đóng cửa"}</span>
           </div>
           <p>${escapeHtml(b.address)}</p>
-          ${b.phone ? `<p><strong>Điện thoại:</strong> <a href="tel:${escapeHtml(b.phone)}">${escapeHtml(b.phone)}</a></p>` : ""}
+          ${b.phone ? `<p><strong>Điện thoại:</strong> <a href="tel:${escapeAttr(b.phone)}">${escapeHtml(b.phone)}</a></p>` : ""}
           <p><strong>Giờ mở cửa:</strong> ${hhmm(b.open_time)} – ${hhmm(b.close_time)}</p>
           <a class="hp-btn hp-btn-line" href="pages/customer/reservation.html?branch_id=${b.id}">Đặt bàn tại đây</a>
         </article>`;

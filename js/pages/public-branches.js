@@ -2,11 +2,14 @@
 const listBox = document.getElementById("branch-list");
 const hhmm = (t) => String(t || "").slice(0, 5); // "10:00:00" -> "10:00"
 const minutes = (t) => { const [h, m] = hhmm(t).split(":").map(Number); return h * 60 + m; };
+// escapeHtml chưa escape dấu " và ', nên khi chèn vào thuộc tính HTML (src, alt, href) phải dùng hàm này
+const escapeAttr = (value) => escapeHtml(value).replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 
 // Đang mở cửa? (giờ máy của khách; xử lý cả trường hợp đóng cửa qua nửa đêm)
 function isOpenNow(b) {
   const now = new Date().getHours() * 60 + new Date().getMinutes();
   const open = minutes(b.open_time), close = minutes(b.close_time);
+  if (open === close) return true; // giờ mở = giờ đóng: hiểu là mở cả ngày
   return open <= close ? now >= open && now < close : now >= open || now < close;
 }
 
@@ -25,7 +28,7 @@ function branchCard(b) {
       </div>
       <ul class="branch-info">
         <li>${ICON_PIN}<span>${escapeHtml(b.address)}</span></li>
-        ${b.phone ? `<li>${ICON_PHONE}<a href="tel:${escapeHtml(b.phone)}">${escapeHtml(b.phone)}</a></li>` : ""}
+        ${b.phone ? `<li>${ICON_PHONE}<a href="tel:${escapeAttr(b.phone)}">${escapeHtml(b.phone)}</a></li>` : ""}
         <li>${ICON_CLOCK}<span>${hhmm(b.open_time)} - ${hhmm(b.close_time)} (mỗi ngày)</span></li>
       </ul>
       <a class="btn btn-book" href="reservation.html?branch_id=${b.id}">Đặt bàn tại đây</a>

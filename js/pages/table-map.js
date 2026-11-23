@@ -9,19 +9,21 @@
 // Màu bàn:
 //   Đang phục vụ (đỏ)  = bàn có order chưa thanh toán (open / sent / served)
 //   Đặt trước (vàng)   = đặt bàn (chờ xác nhận / đã xác nhận) chưa có order, giờ đến nằm trong khoảng
-//                        từ 60 phút trước đến 120 phút sau (120 phút = thời gian giữ bàn của backend)
+//                        từ 30 phút trước đến 120 phút sau (120 phút = thời gian giữ bàn của backend,
+//                        30 phút = quá giờ ngần đó backend tự đánh dấu "không đến")
+//                        Đặt bàn "chờ xác nhận" phải bấm Xác nhận trước thì mới check-in được.
 //   Trống (xanh)       = còn lại (đặt bàn muộn hơn trong ngày chỉ hiện ghi chú nhỏ trên thẻ)
 // Bấm vào bàn: xem thông tin; bàn trống / đặt trước thì mở order; bàn đang phục vụ thì vào xem / gọi món.
 
-// Trang gọi món của module Order (cùng thư mục pages/staff/). Nhận ?order_id=...
+// Trang gọi món của module Order (pages/admin/pos.html). Nhận ?order_id=...&table_id=...
 // Nếu bạn Order đặt tên trang khác thì chỉ cần sửa dòng này.
-const ORDER_PAGE = "../admin/pos.html";;
+const ORDER_PAGE = "../admin/pos.html";
 function orderUrl(orderId, tableId) {
   return `${ORDER_PAGE}?order_id=${orderId}&table_id=${tableId}`;
 }
 
 const REFRESH_MS = 15000; // tự tải lại sơ đồ mỗi 15 giây
-const RESERVED_GRACE_MINUTES = 60; // khách đến trễ tối đa 60 phút vẫn còn giữ bàn
+const RESERVED_GRACE_MINUTES = 30; // khách đến trễ tối đa 30 phút vẫn còn giữ bàn (khớp NO_SHOW_MINUTES của backend)
 const RESERVED_AHEAD_MINUTES = 120; // trước giờ đến tối đa 120 phút thì bàn đã tính là "đặt trước"
 const ACTIVE_ORDER_STATUSES = ["open", "sent", "served"];
 const ORDER_STATUS_LABEL = { open: "Đang gọi món", sent: "Đã gửi bếp", served: "Đã ra món" };
@@ -45,6 +47,7 @@ const dialogClose = document.getElementById("dialog-close");
 let branches = [];
 let tables = []; // bàn kèm trạng thái đã tính: { ...bàn, state, reservation }
 let currentBranchId = null;
+let warnedPartial = false; // đã báo "tải thiếu đặt bàn / order" chưa (tránh báo lại mỗi 15 giây)
 
 function handleError(error) {
   showToast(error.message, "error");
@@ -77,15 +80,21 @@ async function loadMap() {
     return;
   }
   const branchId = currentBranchId;
-  // Bàn là dữ liệu chính (lỗi thì báo). Đặt bàn và order là phụ: lỗi thì bỏ qua,
-  // sơ đồ vẫn vẽ được theo dining_tables.status.
+  // Bàn là dữ liệu chính (lỗi thì báo). Đặt bàn và order là phụ: lỗi thì vẫn vẽ sơ đồ theo
+  // dining_tables.status nhưng phải báo để nhân viên biết sơ đồ có thể chưa đúng (đặt trước có thể bị thiếu).
+  let partial = false;
+  const soft = (promise) => promise.catch(() => { partial = true; return []; });
   const [tableList, reservations, orders] = await Promise.all([
     api.get("/tables", { only_active: true, branch_id: branchId }),
-    api.get("/reservations", { date: todayText(), branch_id: branchId }).catch(() => []),
-    api.get("/orders", { branch_id: branchId }).catch(() => []),
+    soft(api.get("/reservations", { date: todayText(), branch_id: branchId })),
+    soft(api.get("/orders", { branch_id: branchId })),
   ]);
   if (branchId !== currentBranchId) return; // đã đổi chi nhánh trong lúc chờ tải
-
+  if (partial && !warnedPartial) {
+    showToast("Không tải được đặt bàn hoặc order, sơ đồ có thể chưa đúng. Hãy tải lại sau ít phút.", "error");
+  }
+  warnedPartial = partial;
+  
   // Order đang phục vụ của từng bàn (mới nhất trước)
   const activeByTable = new Map();
   for (const o of [...orders].sort((x, y) => y.id - x.id)) {
@@ -149,7 +158,10 @@ function renderMap() {
 function cardHtml(t) {
   // Không chỉ dùng màu: luôn có chữ trạng thái (người mù màu vẫn đọc được)
   let stateText = STATE_LABEL[t.state];
-  if (t.state === "reserved" && t.reservation) stateText += ` ${timeText(t.reservation.reserved_at)}`;
+  if (t.state === "reserved" && t.reservation) {
+    stateText += ` ${timeText(t.reservation.reserved_at)}`;
+    if (t.reservation.status === "pending") stateText += " · chờ xác nhận";
+  }  
   return `
     <button type="button" class="table-card is-${t.state}" data-id="${t.id}">
       <span class="t-number">${escapeHtml(t.table_number)}</span>
@@ -185,14 +197,22 @@ function openTable(id) {
     showOrderOfTable(t, title, basic);
   } else if (t.state === "reserved") {
     const r = t.reservation;
+    const pending = Boolean(r) && r.status === "pending"; // chưa xác nhận thì backend chưa cho check-in
     const info = r
       ? `<li>Khách: <b>${escapeHtml(r.guest_name)}</b> · ${escapeHtml(r.guest_phone)}</li>
          <li>Giờ đến: <b>${timeText(r.reserved_at)}</b> · ${r.party_size} người</li>
          <li>Mã đặt bàn: ${escapeHtml(r.code)}</li>${r.note ? `<li>Ghi chú: ${escapeHtml(r.note)}</li>` : ""}`
       : "";
-    showDialog(title, `<ul class="info-list">${basic}${info}</ul>`,
-      `<button type="button" class="btn btn-primary" id="btn-open-order">Khách đã đến, mở order</button>`);
-    document.getElementById("btn-open-order").addEventListener("click", () => openOrder(t, r ? r.id : null));
+    const statusLine = pending ? `<li>Trạng thái: <b>Chờ xác nhận</b></li>` : "";
+    const action = pending
+      ? `<button type="button" class="btn btn-primary" id="btn-confirm">Xác nhận đặt bàn</button>`
+      : `<button type="button" class="btn btn-primary" id="btn-open-order">Khách đã đến, mở order</button>`;
+    showDialog(title, `<ul class="info-list">${basic}${info}${statusLine}</ul>`, action);
+    if (pending) {
+      document.getElementById("btn-confirm").addEventListener("click", () => confirmReservation(t));
+    } else {
+      document.getElementById("btn-open-order").addEventListener("click", () => openOrder(t, r ? r.id : null));
+    }
   } else {
     const later = t.laterReservation
       ? `<li>Đặt trước lúc <b>${timeText(t.laterReservation.reserved_at)}</b>: ${escapeHtml(t.laterReservation.guest_name)} · ${t.laterReservation.party_size} người</li>`
@@ -214,6 +234,7 @@ async function showOrderOfTable(t, title, basic) {
       return;
     }
     const order = await api.get(`/orders/${t.activeOrder.id}`);
+    if (!dialog.open) return; // người dùng đã đóng hộp thoại trong lúc chờ tải
     const lines = order.items.map((i) => `
       <tr class="${i.status === "cancelled" ? "cancelled" : ""}">
         <td>${escapeHtml(i.menu_item_name)} × ${i.quantity}
@@ -233,6 +254,24 @@ async function showOrderOfTable(t, title, basic) {
     dialog.close();
     handleError(error);
     refresh();
+  }
+}
+// Xác nhận đặt bàn đang chờ (waiter / manager được phép), xong thì hiện nút "Khách đã đến"
+async function confirmReservation(t) {
+  const button = document.getElementById("btn-confirm");
+  button.disabled = true;
+  try {
+    const updated = await api.put(`/reservations/${t.reservation.id}/confirm`);
+    t.reservation.status = updated.status; // "confirmed"
+    showToast("Đã xác nhận đặt bàn");
+    openTable(t.id); // vẽ lại hộp thoại với nút check-in
+  } catch (error) {
+    button.disabled = false;
+    handleError(error);
+    if (error.status === 400 || error.status === 409) { // VD: người khác vừa xác nhận / huỷ rồi
+      dialog.close();
+      refresh();
+    }
   }
 }
 

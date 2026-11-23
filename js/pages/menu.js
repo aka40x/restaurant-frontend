@@ -55,9 +55,16 @@ const noImage = "data:image/svg+xml;utf8," + encodeURIComponent(
 // hiểu là file ảnh nằm trong thư mục frontend của dự án
 const imgSrc = (url) => (/^(https?:|data:|\/)/.test(url) ? url : "../../" + url);
 
+// Tên danh mục theo id
 function categoryName(id) {
   const found = categories.find((c) => c.id === id);
   return found ? found.name : `#${id}`;
+}
+
+// Danh mục đã ngừng: món thuộc danh mục này không hiện ở web khách
+function categoryInactive(id) {
+  const found = categories.find((c) => c.id === id);
+  return Boolean(found) && !found.is_active;
 }
 
 // Lỗi 401 (hết phiên) thì api.js đã tự chuyển về trang đăng nhập; ở đây chỉ hiện thông báo
@@ -138,8 +145,10 @@ function renderItems() {
           <div class="badge-row">
             ${m.is_available
               ? '<span class="badge badge-success">Còn món</span>'
-              : '<span class="badge badge-warning">Hết món</span>'}
-            ${m.is_active ? "" : '<span class="badge badge-muted">Ngừng bán</span>'}
+              : '<span class="badge badge-muted">Ngừng bán</span>'}
+            ${categoryInactive(m.category_id)
+              ? '<span class="badge badge-muted" title="Món không hiện ở web vì danh mục đã ngừng">Danh mục ngừng</span>'
+              : ""}
           </div>
         </td>
         <td class="price">${formatMoney(m.price)}</td>
@@ -156,16 +165,39 @@ function renderItems() {
   renderPager(totalPages);
 }
 
+// Trả về danh sách số trang cần hiện, dùng "…" để rút gọn.
+// Ví dụ (6 trang): đang ở trang 1 → 1 2 … 6 | trang 3 → 1 2 3 4 … 6 | trang 6 → 1 … 5 6
+// Luôn có trang đầu, trang cuối, trang đang xem và trang kế bên.
+function getPageList(current, total) {
+  if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1);
+
+  const pages = new Set([1, total, current, current + 1]);
+  if (current > 1) pages.add(current - 1);
+
+  const sorted = [...pages].filter((p) => p >= 1 && p <= total).sort((a, b) => a - b);
+  const result = [];
+  sorted.forEach((p, i) => {
+    if (i > 0 && p - sorted[i - 1] > 1) result.push("…");
+    result.push(p);
+  });
+  return result;
+}
+
 function renderPager(totalPages) {
   let html = `<span class="info muted">Tổng ${allItems.length} món</span>`;
   html += `<button data-page="${currentPage - 1}" ${currentPage === 1 ? "disabled" : ""}>‹</button>`;
-  for (let p = 1; p <= totalPages; p++) {
-    html += `<button class="${p === currentPage ? "active" : ""}" data-page="${p}">${p}</button>`;
-  }
+  getPageList(currentPage, totalPages).forEach((p) => {
+    if (p === "…") {
+      html += `<span class="dots">…</span>`;
+    } else {
+      html += `<button class="${p === currentPage ? "active" : ""}" data-page="${p}">${p}</button>`;
+    }
+  });
   html += `<button data-page="${currentPage + 1}" ${currentPage === totalPages ? "disabled" : ""}>›</button>`;
   pager.innerHTML = html;
 }
 
+// Bấm số trang hoặc nút ‹ › thì chuyển trang
 pager.addEventListener("click", (event) => {
   const button = event.target.closest("button[data-page]");
   if (!button || button.disabled) return;
@@ -222,6 +254,11 @@ function startEditItem(id) {
   if (!m) return;
   const f = itemForm.elements;
   editingItemId = id;
+  // Danh mục có thể đã ngừng nên không có trong ô chọn: thêm tạm để hiển thị (giữ nguyên danh mục thì vẫn lưu được)
+  if (!categorySelect.querySelector(`option[value="${m.category_id}"]`)) {
+    categorySelect.insertAdjacentHTML("beforeend",
+      `<option value="${m.category_id}">${escapeHtml(categoryName(m.category_id))} (đã ngừng)</option>`);
+  }
   f.category_id.value = m.category_id;
   f.name.value = m.name;
   f.price.value = Number(m.price);
@@ -238,6 +275,7 @@ function startEditItem(id) {
 function resetItemForm() {
   editingItemId = null;
   itemForm.reset();
+  loadCategories().catch(handleError); // bỏ option danh mục thêm tạm ở chế độ sửa
   itemFormTitle.textContent = "Thêm món";
   itemSubmit.textContent = "Thêm";
   itemCancel.hidden = true;
@@ -354,6 +392,10 @@ optionForm.addEventListener("submit", async (event) => {
     is_required: f.is_required.checked,
     is_active: f.is_active.checked,
   };
+  if (data.size && data.topping) {
+    showToast("Tuỳ chọn chỉ là size hoặc topping, không điền cả hai.", "error");
+    return;
+  }
 
   optionSubmit.disabled = true;
   try {
