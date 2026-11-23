@@ -90,6 +90,7 @@ function renderLayout() {
     ? `<div class="user-box">
         ${onHome ? "" : `<a href="${root}${Auth.homePath()}" class="btn-login">Vào trang làm việc</a>`}
         <span>${escapeHtml(user.full_name)} · ${escapeHtml(Auth.roleLabel(user))}</span>
+        <a href="${root}pages/account/password.html" class="btn-login">Đổi mật khẩu</a>
         <button type="button" id="btn-logout" class="btn-logout">Đăng xuất</button>
       </div>`
     : `<div class="user-box"><a href="${root}pages/login.html" class="btn-login">Đăng nhập</a></div>`;
