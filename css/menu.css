@@ -22,3 +22,5 @@ td { vertical-align: middle; }
 .pager button:disabled { opacity: .4; cursor: not-allowed; }
 .badge-row { margin-top: 4px; }
 .option-form-title { margin: 24px 0 0; }
+.pager .dots { min-width: 24px; text-align: center; color: var(--color-muted, #888); }
+.pager button { min-width: 34px; padding: 5px 9px; }
