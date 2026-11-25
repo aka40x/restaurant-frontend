@@ -8,10 +8,13 @@ th { white-space: nowrap; }
 td { vertical-align: middle; }
 .badge { white-space: nowrap; }
 .col-nowrap { white-space: nowrap; }
-.actions { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap; border-bottom: 0; }
+.actions { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: nowrap; border-bottom: 0; }
 .actions .btn { white-space: nowrap; }
 .pager { display: flex; gap: 6px; align-items: center; justify-content: flex-end; margin-top: 16px; flex-wrap: wrap; }
 .pager .info { margin-right: auto; }
 .pager button { min-width: 36px; padding: 6px 10px; border: 1px solid var(--color-border); border-radius: var(--radius); background: #fff; cursor: pointer; font: inherit; }
 .pager button.active { background: var(--color-primary); color: var(--color-accent); border-color: var(--color-primary); }
 .pager button:disabled { opacity: .4; cursor: not-allowed; }
+
+/* Cột nút thao tác: luôn co vừa 2 nút, không để bảng bóp làm nút Sửa/Ngừng rớt dòng */
+tbody#table-body td:last-child { width: 1%; white-space: nowrap; }
