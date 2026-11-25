@@ -24,3 +24,7 @@ td { vertical-align: middle; }
 .option-form-title { margin: 24px 0 0; }
 .pager .dots { min-width: 24px; text-align: center; color: var(--color-muted, #888); }
 .pager button { min-width: 34px; padding: 5px 9px; }
+
+/* Nút thao tác trong bảng món: lưới 2 cột x 2 hàng, 4 nút bằng nhau, gọn và đều */
+#item-table-body .actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; width: max-content; margin-left: auto; justify-content: stretch; }
+#item-table-body .actions .btn { width: 100%; text-align: center; }
