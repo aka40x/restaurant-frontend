@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Khách thân thiết | Quản lý nhà hàng</title>
+  <link rel="icon" href="../../assets/images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="stylesheet" href="../../css/loyalty.css">
+</head>
+<body data-root="../../">
+  <header id="app-header"></header>
+
+  <main class="container layout-2col">
+    <h1 class="page-title">Khách hàng thân thiết</h1>
+    <p class="muted rules"><a href="payment.html">← Về màn hình Thanh toán</a><br>Tích 1 điểm cho mỗi 10.000 ₫ của hoá đơn. Đổi điểm: 1 điểm = 1.000 ₫ giảm giá, tối thiểu 10 điểm mỗi lần, ra một mã voucher dùng 1 lần trong 30 ngày.</p>
+
+    <!-- Bên trái: tra cứu khách theo số điện thoại -->
+    <section class="card">
+      <h2>Tra cứu điểm</h2>
+      <form id="lookup-form" class="phone-row" autocomplete="off">
+        <input id="phone" type="tel" inputmode="numeric" maxlength="11" placeholder="Số điện thoại khách, VD 0912345678" aria-label="Số điện thoại khách">
+        <button class="btn btn-primary" type="submit">Tra cứu</button>
+      </form>
+      <div id="lookup-msg" class="msg muted" role="status"></div>
+
+      <div id="account" hidden>
+        <div class="balance">
+          <div class="who">Khách hàng<strong id="acc-name"></strong><span id="acc-phone"></span></div>
+          <div class="pts"><span id="acc-balance">0</span><small>điểm</small></div>
+        </div>
+        <h3>Lịch sử gần đây</h3>
+        <ul id="history" class="history"></ul>
+      </div>
+    </section>
+
+    <!-- Bên phải: tích điểm và đổi điểm -->
+    <section class="card">
+      <div class="action-box">
+        <h2>Tích điểm cho hoá đơn</h2>
+        <p class="muted">Nhập mã thanh toán in trên hoá đơn (dòng "Mã thanh toán") và số điện thoại ở bên trái. Mỗi hoá đơn chỉ tích điểm một lần.</p>
+        <label for="payment-id">Mã thanh toán</label>
+        <div class="row">
+          <input id="payment-id" type="number" min="1" placeholder="VD 15">
+          <button id="btn-earn" class="btn btn-primary" type="button">Tích điểm</button>
+        </div>
+        <div id="earn-msg" class="msg muted" role="status"></div>
+      </div>
+
+      <div class="action-box">
+        <h2>Đổi điểm lấy giảm giá</h2>
+        <label for="points">Số điểm muốn đổi</label>
+        <div class="row">
+          <input id="points" type="number" min="10" step="1" placeholder="Tối thiểu 10">
+          <button id="btn-redeem" class="btn btn-primary" type="button">Đổi điểm</button>
+        </div>
+        <div id="redeem-preview" class="muted msg"></div>
+        <div id="redeem-msg" class="msg muted" role="status"></div>
+        <div id="voucher-result" class="voucher-result" hidden></div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="app-footer"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.7.9/dist/axios.min.js"></script>
+  <script src="../../js/config.js"></script>
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/api.js"></script>
+  <script src="../../js/utils.js"></script>
+  <script src="../../js/layout.js"></script>
+  <script>Auth.requireRole(["cashier", "manager"]);</script>
+  <script src="../../js/pages/loyalty.js"></script>
+</body>
+</html>

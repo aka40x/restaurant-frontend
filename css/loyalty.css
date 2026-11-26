@@ -1,0 +1,36 @@
+/* Trang Khách thân thiết (thu ngân / quản lý) */
+.layout-2col { grid-template-columns: 1fr 1fr; align-items: start; }
+.layout-2col > * { min-width: 0; }
+.page-title { grid-column: 1 / -1; margin: 0 0 4px; }
+.rules { grid-column: 1 / -1; margin: 0 0 4px; }
+.card h2 { margin-top: 0; }
+
+.phone-row { display: flex; gap: 8px; }
+.phone-row input { flex: 1 1 auto; min-width: 0; width: auto; }
+.phone-row .btn { flex: 0 0 auto; width: auto; white-space: nowrap; }
+
+.balance { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  margin-top: 16px; padding: 16px 20px; border-radius: 14px; background: var(--color-primary); color: #fff; }
+.balance .who { font-size: 14px; color: var(--color-accent); }
+.balance .who strong { display: block; color: #fff; font-size: 18px; }
+.balance .pts { font-size: 36px; font-weight: 600; line-height: 1.1; }
+.balance .pts small { font-size: 14px; font-weight: 400; color: var(--color-accent); margin-left: 4px; }
+
+.history { list-style: none; margin: 16px 0 0; padding: 0; }
+.history li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--color-border); font-size: 14px; }
+.history li:last-child { border-bottom: 0; }
+.history .plus { color: var(--color-success); font-weight: 600; }
+.history .minus { color: var(--color-danger); font-weight: 600; }
+
+.action-box + .action-box { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--color-border); }
+.action-box h3 { margin: 0 0 4px; }
+.action-box .row { display: flex; gap: 8px; margin-top: 10px; }
+.action-box .row input { flex: 1 1 auto; min-width: 0; width: auto; }
+.action-box .row .btn { flex: 0 0 auto; width: auto; white-space: nowrap; }
+.msg { min-height: 20px; margin-top: 8px; font-size: 14px; }
+.text-ok { color: var(--color-success); }
+
+.voucher-result { margin-top: 12px; padding: 16px; border: 1px dashed var(--color-secondary); border-radius: 12px; background: var(--color-bg); }
+.voucher-result code { display: inline-block; margin: 4px 8px 4px 0; padding: 4px 12px; border-radius: 8px; background: #fff; border: 1px solid var(--color-border); font-size: 20px; font-weight: 600; letter-spacing: 1px; }
+
+@media (max-width: 800px) { .layout-2col { grid-template-columns: 1fr; } }
