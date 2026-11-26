@@ -48,6 +48,11 @@ const SIDEBAR = [
     roles: ["manager", "cashier"],
   },
   {
+    href: "pages/staff/loyalty.html",
+    label: "Khách thân thiết",
+    roles: ["manager", "cashier"],
+  },
+  {
     href: "pages/account/password.html",
     label: "Đổi mật khẩu",
     roles: ["manager", "waiter", "kitchen", "cashier"],
