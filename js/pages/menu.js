@@ -167,9 +167,10 @@ function renderItems() {
 
 // Trả về danh sách số trang cần hiện, dùng "…" để rút gọn.
 // Ví dụ (6 trang): đang ở trang 1 → 1 2 … 6 | trang 3 → 1 2 3 4 … 6 | trang 6 → 1 … 5 6
+// Từ 5 trang trở lên là rút gọn (≤ 4 trang thì hiện đủ).
 // Luôn có trang đầu, trang cuối, trang đang xem và trang kế bên.
 function getPageList(current, total) {
-  if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1);
+  if (total <= 4) return Array.from({ length: total }, (_, i) => i + 1);
 
   const pages = new Set([1, total, current, current + 1]);
   if (current > 1) pages.add(current - 1);
